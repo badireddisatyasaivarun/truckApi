@@ -6,5 +6,7 @@ import lombok.Data;
 
 public @Data class TruckPutRequest {
 
-	private UUID imeiId;
+	private UUID imei;
+	private Boolean approved;
+	
 }

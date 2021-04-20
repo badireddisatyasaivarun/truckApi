@@ -18,8 +18,8 @@ public @Data class TruckData {
 	
 	private UUID transporterId;
 	private String truckNo;
-	private boolean approved;
-	private UUID Imei; 
+	private Boolean approved;
+	private UUID imei; 
 
 	
 }

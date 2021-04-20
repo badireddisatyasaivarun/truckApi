@@ -9,8 +9,8 @@ public @Data class TruckResponse {
 	private UUID transporterId;
 	private UUID truckId;
 	private String truckNo;
-	private boolean approved;
-	private UUID IMEI;
+	private Boolean approved;
+	private UUID imei;
 
 		
 }
