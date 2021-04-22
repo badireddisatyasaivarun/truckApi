@@ -6,11 +6,11 @@ import lombok.Data;
 
 public @Data class TruckResponse {
 
-	private UUID transporterId;
-	private UUID truckId;
+	private String transporterId;
+	private String truckId;
 	private String truckNo;
 	private Boolean approved;
-	private UUID imei;
+	private String imei;
 
 		
 }

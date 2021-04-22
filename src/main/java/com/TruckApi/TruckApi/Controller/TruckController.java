@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.TruckApi.TruckApi.Model.TruckPostResponse;
-import com.TruckApi.TruckApi.Model.TruckPutRequest;
+import com.TruckApi.TruckApi.Model.TruckCreateResponse;
 import com.TruckApi.TruckApi.Model.TruckRequest;
+import com.TruckApi.TruckApi.Model.TruckUpdateRequest;
+import com.TruckApi.TruckApi.Model.TruckUpdateResponse;
 import com.TruckApi.TruckApi.Service.TruckServiceImpl;
 import com.TruckApi.TruckApi.entities.TruckData;
 
@@ -27,57 +28,71 @@ public class TruckController {
 	@Autowired
 	private TruckServiceImpl truckServiceImpl;
 	
-	@GetMapping("/truck/All")
-	public List<TruckData> getTruck()
-	{
-		return this.truckServiceImpl.getData();
-	}
+//	@GetMapping("/truck/All")
+//	public List<TruckData> getTruck()
+//	{
+//		return truckServiceImpl.getData();
+//	}
 	
-	@GetMapping("/truck/{truckId}")
-	public TruckData getTruckWithId(@PathVariable UUID truckId)
-	{
-		return this.truckServiceImpl.getDataById(truckId);
-	}
 	
 	@GetMapping("/truck")
-	public List<TruckData> getTruckDataPagable(@RequestParam(value="pageNo",required=false) Integer pageNo,@RequestParam(value="transporterId",required=false) UUID transporterId,@RequestParam(value="approved",required=false) Boolean approved)
+	public List<TruckData> getTruckDataPagable(@RequestParam(value="pageNo",required=false) Integer pageNo,@RequestParam(value="transporterId",required=false) String transporterId,@RequestParam(value="approved",required=false) Boolean approved)
 	{
 		
 //		System.out.println(transporterId);
 //		System.out.println(approved);
 //      localhost:8080/truck/?transporterId=df878007-80da-11e9-93dd-00163e004571&approved=false&pageNo=2
-		try {
-		return this.truckServiceImpl.getDataBytransporterIdAndApprovedPage(transporterId,approved,pageNo);
-		}
-		catch(Exception e)
+		if(pageNo==null)
+			pageNo=0;
+		if(transporterId!=null&&approved==null)
 		{
-			return this.truckServiceImpl.getDataBytransporterIdAndApproved(transporterId,approved);
+			return truckServiceImpl.getDataBytransporterId(transporterId,pageNo);
+		}
+		else if(transporterId==null&&approved!=null)
+		{
+			return truckServiceImpl.getDataByapproved(approved,pageNo);
+		}
+		else if(transporterId!=null&&approved!=null)
+		{
+			return truckServiceImpl.getDataBytransporterIdAndApprovedPage(transporterId,approved,pageNo);
+		}
+		else
+		{
+			return truckServiceImpl.getData();
 		}
 		
 	}
 	
 	
-	@PostMapping("/truck")
-	public TruckPostResponse addTruck(@RequestBody TruckRequest truckRequest)
+	
+	@GetMapping("/truck/{truckId}")
+	public TruckData getTruckWithId(@PathVariable String truckId)
 	{
-			return this.truckServiceImpl.addData(truckRequest);	
+		return truckServiceImpl.getDataById(truckId);
+	}
+	
+	
+	@PostMapping("/truck")
+	public TruckCreateResponse addTruck(@RequestBody TruckRequest truckRequest)
+	{
+			return truckServiceImpl.addData(truckRequest);	
 	}
 	
 	
 	
 	@PutMapping("/truck/{truckId}")
-	public String updateTruck(@PathVariable UUID truckId,@RequestBody TruckPutRequest truckPutRequest)
+	public TruckUpdateResponse updateTruck(@PathVariable String truckId,@RequestBody TruckUpdateRequest truckUpdateRequest)
 	{
-		return this.truckServiceImpl.updateData(truckId,truckPutRequest);
+		return truckServiceImpl.updateData(truckId,truckUpdateRequest);
 		//@PathVariable UUID truckId /{truckId}
 	}
 	
 	
 	
 	@DeleteMapping("/truck/{truckId}")
-	public void delete(@PathVariable UUID truckId)
+	public void delete(@PathVariable String truckId)
 	{
-		this.truckServiceImpl.deleteData(truckId);
+		truckServiceImpl.deleteData(truckId);
 	}
 	
 	

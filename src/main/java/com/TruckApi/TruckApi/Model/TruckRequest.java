@@ -6,7 +6,7 @@ import lombok.Data;
 
 public @Data class TruckRequest {
 
-	private UUID transporter_id;
+	private String transporter_id;
 	private String truckNo;
 	
 }

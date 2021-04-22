@@ -14,13 +14,15 @@ import com.TruckApi.TruckApi.entities.TruckData;
 
 
 @Repository
-public interface TruckDao extends JpaRepository<TruckData,UUID>{
+public interface TruckDao extends JpaRepository<TruckData,String>{
 
-	public TruckData findByTruckId(UUID truckId);
-	public void deleteByTruckId(UUID truckId);
+	public TruckData findByTruckId(String truckId);
+	public void deleteByTruckId(String truckId);
 	public List<TruckData> findByTruckNo(String truckNo);
-	public List<TruckData> findByTransporterId(UUID transporterId);
-	public List<TruckData> findByTransporterIdAndApproved(UUID transporterId,Boolean approved, Pageable pageable);
-	public List<TruckData> findByTransporterIdAndApproved(UUID transporterId,Boolean approved);
+	public List<TruckData> findByTransporterId(String transporterId);
+	public List<TruckData> findByTransporterId(String transporterId,Pageable pageable);
+	public List<TruckData> findByTransporterIdAndApproved(String transporterId,Boolean approved, Pageable pageable);
+	public List<TruckData> findByTransporterIdAndApproved(String transporterId,Boolean approved);
+	public List<TruckData> findByApproved(Boolean approved, Pageable pageable);
 	
 }

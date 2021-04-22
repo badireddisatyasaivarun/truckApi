@@ -1,12 +1,9 @@
 package com.TruckApi.TruckApi.Model;
 
-import java.util.UUID;
-
 import lombok.Data;
 
-public @Data class TruckPostResponse {
+public @Data class TruckUpdateResponse {
 
 	private String status;
-	private UUID id;
 	
 }

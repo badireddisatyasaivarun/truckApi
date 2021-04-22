@@ -11,15 +11,14 @@ import lombok.Data;
 @Entity
 public @Data class TruckData {
 
+
+	@Id	
+	private String truckId;
 	
-	@GeneratedValue
-	@Id
-	private UUID truckId;
-	
-	private UUID transporterId;
+	private String transporterId;
 	private String truckNo;
 	private Boolean approved;
-	private UUID imei; 
+	private String imei; 
 
 	
 }

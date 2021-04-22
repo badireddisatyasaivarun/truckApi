@@ -2,7 +2,6 @@ package com.TruckApi.TruckApi.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.TruckApi.TruckApi.Dao.SecondTruckDao;
 import com.TruckApi.TruckApi.Dao.TruckDao;
-import com.TruckApi.TruckApi.Model.TruckPostResponse;
-import com.TruckApi.TruckApi.Model.TruckPutRequest;
+import com.TruckApi.TruckApi.Model.TruckCreateResponse;
 import com.TruckApi.TruckApi.Model.TruckRequest;
+import com.TruckApi.TruckApi.Model.TruckUpdateRequest;
+import com.TruckApi.TruckApi.Model.TruckUpdateResponse;
 import com.TruckApi.TruckApi.entities.TruckData;
 import com.TruckApi.TruckApi.entities.TruckTransporterData;
 
@@ -31,19 +31,21 @@ public class TruckServiceImpl {
 	@Autowired
 	private SecondTruckDao sTruckDao;
 	
-	public TruckPostResponse addData(TruckRequest truckRequest) {
+	
+	
+	public TruckCreateResponse addData(TruckRequest truckRequest) {
 		// TODO Auto-generated method stub
-		
+	
 		
 		// object for postResponse
-				TruckPostResponse truckPostResponse = new TruckPostResponse();
+				TruckCreateResponse truckCreateResponse = new TruckCreateResponse();
 		
 		
 		//handeling for in-correct transporterId as NULL;
 		if(truckRequest.getTransporter_id()==null)
 		{
-			truckPostResponse.setStatus("Failed: Enter Correct Transporter Id");
-			return truckPostResponse;
+			truckCreateResponse.setStatus("Failed: Enter Correct Transporter Id");
+			return truckCreateResponse;
 		}
 		
 		
@@ -51,19 +53,27 @@ public class TruckServiceImpl {
 		//handeling unprocessed TruckNo.
 		String truckNo = truckRequest.getTruckNo();
 		String truckNoUpdated="";
+		int index=0;
 		for(int i=0;i<truckNo.length();i++)
 		{
 			if(truckNo.charAt(i)!=' ')
 			{
+				if(index==2||index==5||index==8)
+				{
+					truckNoUpdated += " ";
+					index++;
+				}
 				truckNoUpdated +=truckNo.charAt(i);
+				index++;
 			}
 		}
-		if(truckNoUpdated=="")
+		if(index==0)
 		{
-			truckPostResponse.setStatus("Failed: truckNo Cannot be Empty");
-			return truckPostResponse;
+			truckCreateResponse.setStatus("Failed: truckNo Cannot be Empty");
+			return truckCreateResponse;
 		}
 		truckRequest.setTruckNo(truckNoUpdated);
+		
 		
 		
 		
@@ -77,9 +87,9 @@ public class TruckServiceImpl {
 			{
 				if(check.get(i).getTruckNo().equals(truckRequest.getTruckNo()))
 				{
-					truckPostResponse.setStatus("Failed: TruckId is already Associated with TransporterId");
+					truckCreateResponse.setStatus("Failed: TruckId is already Associated with TransporterId");
 					//System.out.println(1);
-					return truckPostResponse;
+					return truckCreateResponse;
 				}
 			}
 			
@@ -89,40 +99,44 @@ public class TruckServiceImpl {
 		
 		// sending data to TruckData Table.
 		TruckData data = new TruckData();
+		String truckId_temp = "truck:"+UUID.randomUUID().toString();
+		data.setTruckId(truckId_temp);
 		data.setTransporterId(truckRequest.getTransporter_id());
 		data.setTruckNo(truckRequest.getTruckNo());
 		data.setApproved(false);
 		data.setImei(null);
 		
 		truckDao.save(data);
-		
-		
+	
 		
 		// sending data to truckId - TransporterId table.
 		TruckTransporterData sData = new TruckTransporterData();
 		sData.setTransporterId(truckRequest.getTransporter_id());
-		List<TruckData> truckDataList = truckDao.findByTruckNo(truckRequest.getTruckNo());
+		sData.setTruckId(truckId_temp);
 		
-		for(int i=0;i<truckDataList.size();i++)
-		{
-			if(truckDataList.get(i).getTransporterId()==truckRequest.getTransporter_id())
-			{
-				sData.setTruckId(truckDataList.get(i).getTruckId());
-				break;
-			}
-		}
 		
-		//System.out.println(sData.getTransporterId());
-		//System.out.println(sData.getTruckId());
+//		List<TruckData> truckDataList = truckDao.findByTruckNo(truckRequest.getTruckNo());
+//		
+//		for(int i=0;i<truckDataList.size();i++)
+//		{
+//			if(truckDataList.get(i).getTransporterId()==truckRequest.getTransporter_id())
+//			{
+//				sData.setTruckId(truckDataList.get(i).getTruckId());
+//				break;
+//			}
+//		}
+//		System.out.println(sData.getTransporterId());
+//		System.out.println(sData.getTruckId());
+		
 		sTruckDao.save(sData);
 
 		
 		
 		//Sending success postResponse
-		truckPostResponse.setStatus("Success");
-		truckPostResponse.setId(truckRequest.getTransporter_id());
+		truckCreateResponse.setStatus("Success");
+		truckCreateResponse.setId(truckRequest.getTransporter_id());
 	
-		return truckPostResponse;
+		return truckCreateResponse;
 	}
 	
 	
@@ -135,48 +149,66 @@ public class TruckServiceImpl {
 
 	
 	// get truck data by the truck id
-	public TruckData getDataById(UUID Id) {
+	public TruckData getDataById(String Id) {
 		// TODO Auto-generated method stub
                  return truckDao.findByTruckId(Id);
+                
 	}
 
 	
 	// update the approved and imei status
-	public String updateData(UUID id,TruckPutRequest truckPutRequest) {
+	public TruckUpdateResponse updateData(String id,TruckUpdateRequest truckUpdateRequest) {
 		// TODO Auto-generated method stub
+		TruckUpdateResponse response = new TruckUpdateResponse();
 		TruckData temp = truckDao.findByTruckId(id);
 		if(temp==null)
 		{
-			return "Failed";
+			response.setStatus("False");
+			return response;
 		}
 		
-		temp.setApproved(truckPutRequest.getApproved());
-		temp.setImei(truckPutRequest.getImei());
+		if(truckUpdateRequest.getApproved()!=null)
+		temp.setApproved(truckUpdateRequest.getApproved());
+		
+		if(truckUpdateRequest.getImei()!=null)
+		temp.setImei(truckUpdateRequest.getImei());
+		
 		truckDao.save(temp);
-		return "Success";
+		response.setStatus("Success");
+		return response;
 	}
 
 	
 	// delete a data
-	public void deleteData(UUID id) {
+	public void deleteData(String id) {
 		// TODO Auto-generated method stub
 		TruckData temp = truckDao.findByTruckId(id);
+		if(!Objects.isNull(temp))
 		truckDao.delete(temp);
 	}
 
 
 	// get data for tranporterId and Approved status with pagenation
-	public List<TruckData> getDataBytransporterIdAndApprovedPage(UUID transporterId,Boolean approved,Integer page) {
+	public List<TruckData> getDataBytransporterIdAndApprovedPage(String transporterId,Boolean approved,Integer page) {
 		// TODO Auto-generated method stub
 		Pageable p = PageRequest.of(page,2);
 		return truckDao.findByTransporterIdAndApproved(transporterId,approved,p);
 	}
 
 	
-	// get data for tranporterId and Approved status without pagenation
-	public List<TruckData> getDataBytransporterIdAndApproved(UUID transporterId,Boolean approved) {
+	// get data for tranporterId with pagenation
+	public List<TruckData> getDataBytransporterId(String transporterId,Integer page) {
 		// TODO Auto-generated method stub
-		return truckDao.findByTransporterIdAndApproved(transporterId,approved);
+		Pageable p = PageRequest.of(page,2);
+		return truckDao.findByTransporterId(transporterId,p);
+	}
+
+
+
+	public List<TruckData> getDataByapproved(Boolean approved, Integer page) {
+		// TODO Auto-generated method stub
+		Pageable p = PageRequest.of(page,2);
+		return truckDao.findByApproved(approved,p);
 	}
 	
 	

@@ -11,7 +11,7 @@ import lombok.Data;
 public @Data class TruckTransporterData {
 
 	@Id
-	private UUID truckId;
-	private UUID transporterId;
+	private String truckId;
+	private String transporterId;
 	
 }
