@@ -28,13 +28,47 @@ public class TruckController {
 	@Autowired
 	private TruckServiceImpl truckServiceImpl;
 	
+<<<<<<< HEAD
+=======
+//	@GetMapping("/truck/All")
+//	public List<TruckData> getTruck()
+//	{
+//		return truckServiceImpl.getData();
+//	}
+	
+>>>>>>> 2b02d77b3e4725b96b71c1f2ea692a7e9f105831
 	
 	@GetMapping("/truck")
 	public List<TruckData> getTruckDataPagable(@RequestParam(value="pageNo",required=false) Integer pageNo,@RequestParam(value="transporterId",required=false) String transporterId,@RequestParam(value="approved",required=false) Boolean approved)
 	{
 		
+<<<<<<< HEAD
 //      localhost:8080/truck/?transporterId=df878007-80da-11e9-93dd-00163e004571&approved=false&pageNo=2
 	    return truckServiceImpl.getTruckDataPagableService(pageNo,transporterId,approved);
+=======
+//		System.out.println(transporterId);
+//		System.out.println(approved);
+//      localhost:8080/truck/?transporterId=df878007-80da-11e9-93dd-00163e004571&approved=false&pageNo=2
+		if(pageNo==null)
+			pageNo=0;
+		if(transporterId!=null&&approved==null)
+		{
+			return truckServiceImpl.getDataBytransporterId(transporterId,pageNo);
+		}
+		else if(transporterId==null&&approved!=null)
+		{
+			return truckServiceImpl.getDataByapproved(approved,pageNo);
+		}
+		else if(transporterId!=null&&approved!=null)
+		{
+			return truckServiceImpl.getDataBytransporterIdAndApprovedPage(transporterId,approved,pageNo);
+		}
+		else
+		{
+			return truckServiceImpl.getData();
+		}
+		
+>>>>>>> 2b02d77b3e4725b96b71c1f2ea692a7e9f105831
 	}
 	
 	
