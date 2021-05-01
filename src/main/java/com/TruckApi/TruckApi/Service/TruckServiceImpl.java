@@ -273,7 +273,7 @@ public class TruckServiceImpl {
 			Pageable p = PageRequest.of(pageNo,2);
 			return truckDao.findByTransporterIdAndApproved(transporterId,approved,p);
 		}
-		return null;
+		return truckDao.findAll();
 	}
 	
 	
