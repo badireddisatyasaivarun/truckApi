@@ -8,8 +8,5 @@ public class TruckApiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TruckApiApplication.class, args);
-		System.out.println("first");
 	}
-
-
 }

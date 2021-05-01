@@ -32,8 +32,6 @@ public class TruckController {
 	@GetMapping("/truck")
 	public List<TruckData> getTruckDataPagable(@RequestParam(value="pageNo",required=false) Integer pageNo,@RequestParam(value="transporterId",required=false) String transporterId,@RequestParam(value="approved",required=false) Boolean approved)
 	{
-		
-//      localhost:8080/truck/?transporterId=df878007-80da-11e9-93dd-00163e004571&approved=false&pageNo=2
 	    return truckServiceImpl.getTruckDataPagableService(pageNo,transporterId,approved);
 	}
 	
@@ -58,7 +56,6 @@ public class TruckController {
 	public TruckUpdateResponse updateTruck(@PathVariable String truckId,@RequestBody TruckUpdateRequest truckUpdateRequest)
 	{
 		return truckServiceImpl.updateData(truckId,truckUpdateRequest);
-		//@PathVariable UUID truckId /{truckId}
 	}
 	
 	

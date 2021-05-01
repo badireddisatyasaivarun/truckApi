@@ -24,5 +24,6 @@ public interface TruckDao extends JpaRepository<TruckData,String>{
 	public List<TruckData> findByTransporterIdAndApproved(String transporterId,Boolean approved, Pageable pageable);
 	public List<TruckData> findByTransporterIdAndApproved(String transporterId,Boolean approved);
 	public List<TruckData> findByApproved(Boolean approved, Pageable pageable);
+	public List<TruckData> findByTransporterIdAndTruckNo(String transporterId, String truckNo);
 	
 }

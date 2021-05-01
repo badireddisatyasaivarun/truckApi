@@ -6,9 +6,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public @Data class TruckData {
 
 	@Id	
@@ -18,21 +22,5 @@ public @Data class TruckData {
 	private String truckNo;
 	private Boolean approved;
 	private String imei;
-
-	
-	//constructor
-	public TruckData() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public TruckData(String truckId, String transporterId, String truckNo, Boolean approved, String imei) {
-		super();
-		this.truckId = truckId;
-		this.transporterId = transporterId;
-		this.truckNo = truckNo;
-		this.approved = approved;
-		this.imei = imei;
-	}
-	
 }
 

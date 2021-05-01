@@ -4,6 +4,7 @@ package com.TruckApi.TruckApi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.TruckApi.TruckApi.Constants.TruckConstants;
 import com.TruckApi.TruckApi.Controller.TruckController;
 import com.TruckApi.TruckApi.Dao.SecondTruckDao;
 import com.TruckApi.TruckApi.Dao.TruckDao;
@@ -43,6 +45,7 @@ class TestTruckController {
 	@MockBean 
 	private SecondTruckDao sTruckDao;
 	
+	private TruckConstants truckConstants = new TruckConstants();
 	
 	@Test
 	public void AddTruckCase1Test() {
@@ -58,14 +61,16 @@ class TestTruckController {
 		
 		
 		truckCreateResponse.setId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
-		truckCreateResponse.setStatus("Success");
+		truckCreateResponse.setStatus(truckConstants.getSuccess());
 		
 	
 		truckData.setApproved(false);
 		truckData.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
 		truckData.setTruckId(null);
 		truckData.setTruckNo("He 23 re 4444");
+		ArrayList<TruckData> list=new ArrayList<TruckData>();
 		
+		when(truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(),truckRequest.getTruckNo())).thenReturn(list);
         when(truckDao.save(truckData)).thenReturn(truckData);
         assertEquals(truckCreateResponse,truckController.addTruck(truckRequest));
            
@@ -84,7 +89,7 @@ class TestTruckController {
 		 truckRequest.setTruckNo("He 23 re 4444");
 		 
 	     truckCreateResponse.setId(null);
-	     truckCreateResponse.setStatus("Failed: Enter Correct Transporter Id");
+	     truckCreateResponse.setStatus(truckConstants.getInCorrectTransporterId());
 			
 		 assertEquals(truckCreateResponse,truckController.addTruck(truckRequest));
 		
@@ -103,7 +108,7 @@ class TestTruckController {
 		truckRequest.setTruckNo("");
 		
 		truckCreateResponse.setId(null);
-		truckCreateResponse.setStatus("Failed: truckNo Cannot be Empty");
+		truckCreateResponse.setStatus(truckConstants.getTruckNoIsInvalid());
 	  	
 	    assertEquals(truckCreateResponse,truckController.addTruck(truckRequest));
 	}
@@ -124,9 +129,10 @@ class TestTruckController {
 		t2 = new TruckData(null,"transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67","He 23 re 4445",false,null);
 		
 		truckCreateResponse.setId(null);
-		truckCreateResponse.setStatus("Failed: TruckId is already Associated with TransporterId");
+		truckCreateResponse.setStatus(truckConstants.getExistingTruckAndTransporter());
 		
-		when(truckDao.findByTransporterId(truckRequest.getTransporterId())).thenReturn(Stream.of(t1,t2).collect(Collectors.toList()));
+		when(truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(),truckRequest.getTruckNo())).thenReturn(Stream.of(t1,t2).collect(Collectors.toList()));
+		
 
 	    assertEquals(truckCreateResponse,truckController.addTruck(truckRequest));
 		
@@ -167,7 +173,7 @@ class TestTruckController {
 		when(truckDao.save(truckData)).thenReturn(truckData);	
 		when(truckDao.findByTruckId(truckId)).thenReturn(truckData);
 		
-		response.setStatus("Success");
+		response.setStatus(truckConstants.getSuccess());
 
 		assertEquals(response,truckController.updateTruck(truckId, truckUpdateRequest));
 
@@ -190,7 +196,7 @@ class TestTruckController {
         truckData.setImei("dc2224c0-b24d-4604-91dd-a630d22dfe49");
 		when(truckDao.save(truckData)).thenReturn(truckData);	
 		
-		response.setStatus("Success");
+		response.setStatus(truckConstants.getSuccess());
 
 		assertEquals(response,truckController.updateTruck(truckId, truckUpdateRequest));
 		
@@ -216,7 +222,7 @@ class TestTruckController {
 		when(truckDao.save(truckData)).thenReturn(truckData);	
 		
 		
-		response.setStatus("Success");
+		response.setStatus(truckConstants.getSuccess());
 
 		assertEquals(response,truckController.updateTruck(truckId, truckUpdateRequest));
 	}
@@ -236,7 +242,7 @@ class TestTruckController {
 		
 		when(truckDao.findByTruckId(truckId)).thenReturn(truckData);
 				
-		response.setStatus("Failed: truckNo Cannot be Empty");
+		response.setStatus(truckConstants.getTruckNoIsInvalid());
 
 		assertEquals(response,truckController.updateTruck(truckId, truckUpdateRequest));
 		
@@ -262,7 +268,7 @@ class TestTruckController {
         truckData.setApproved(true);
 		when(truckDao.save(truckData)).thenReturn(truckData);
 		
-		response.setStatus("Success");
+		response.setStatus(truckConstants.getSuccess());
 
 		assertEquals(response,truckController.updateTruck(truckId, truckUpdateRequest));
 		
@@ -287,7 +293,7 @@ class TestTruckController {
 		truckData.setApproved(false);
 		when(truckDao.save(truckData)).thenReturn(truckData);
 				
-		response.setStatus("Failed: truckNo Cannot be Empty");
+		response.setStatus(truckConstants.getTruckNoIsInvalid());
 
 	    assertEquals(response,truckController.updateTruck(truckId, truckUpdateRequest));
 	}
@@ -305,7 +311,7 @@ class TestTruckController {
 		
 		when(truckDao.findByTruckId(truckId)).thenReturn(null);
 		
-		response.setStatus("False");
+		response.setStatus(truckConstants.getFailure());
 		assertEquals(response,truckController.updateTruck(truckId, truckUpdateRequest));
 		
 	}
@@ -328,7 +334,7 @@ class TestTruckController {
         when(truckDao.findByTruckId(truckId)).thenReturn(t1);
         when(truckDao.findByTruckNo("AP 32 AD 2221")).thenReturn(Stream.of(t2,t3).collect(Collectors.toList()));
 		
-		response.setStatus("Failed: After Updating, Two elements Exists with same TruckId and TransporterId");
+		response.setStatus(truckConstants.getUpExistingTruckAndTransporter());
 		assertEquals(response,truckController.updateTruck(truckId, truckUpdateRequest));
 	}
 	
@@ -415,32 +421,6 @@ class TestTruckController {
 		when(truckDao.findByTransporterIdAndApproved(transporterId,approved,p)).thenReturn(Stream.of(t5).collect(Collectors.toList()));
 		assertEquals(1,truckController.getTruckDataPagable(pageNo,transporterId,approved).size());
 	}
-	
-	
-	@Test
-	public void getTruckDataPagableCase4Test(){
-		
-		//Getting All TruckData When No params are Passed;
-		Integer pageNo;
-		String transporterId;
-		Boolean approved;
-		Pageable p;
-		
-		TruckData t1 = new TruckData("id1","transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67","Ap32ad2222",false,null);
-		TruckData t2 = new TruckData("id2","transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67","Ap32ad2221",false,null);
-		TruckData t3 = new TruckData("id3","transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67","Ap32ad2220",false,null);
-		TruckData t4 = new TruckData("id4","transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67","Ap32ad2219",true,null);
-		TruckData t5 = new TruckData("id5","transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb68","Ap32ad2219",true,null);
-		TruckData t6 = new TruckData("id6","transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb68","Ap32ad2211",false,null);
-		
-		pageNo=null;
-		approved=null;
-		transporterId=null;
-		when(truckDao.findAll()).thenReturn(Stream.of(t1,t2,t3,t4,t5,t6).collect(Collectors.toList()));
-		assertEquals(6,truckController.getTruckDataPagable(pageNo,transporterId,approved).size());
-	}
-	
-	
 	
 	
 	@Test

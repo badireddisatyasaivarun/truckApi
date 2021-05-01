@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.TruckApi.TruckApi.Constants.TruckConstants;
 import com.TruckApi.TruckApi.Dao.SecondTruckDao;
 import com.TruckApi.TruckApi.Dao.TruckDao;
 import com.TruckApi.TruckApi.Model.TruckCreateResponse;
@@ -27,12 +28,11 @@ public class TruckServiceImpl {
 	@Autowired
 	private TruckDao truckDao;
 	
-	
-	
 //	Creating dao interface for truck - transporter table
 	@Autowired
 	private SecondTruckDao sTruckDao;
 	
+	private TruckConstants truckConstants = new TruckConstants();
 	
 	public TruckCreateResponse addData(TruckRequest truckRequest) {
 		
@@ -42,19 +42,22 @@ public class TruckServiceImpl {
 			
 //		handeling for in-correct transporterId as NULL;
 		if(truckRequest.getTransporterId()==null){
-			
-			truckCreateResponse.setStatus("Failed: Enter Correct Transporter Id");
+			truckCreateResponse.setStatus(truckConstants.getInCorrectTransporterId());
 			return truckCreateResponse;
 		}
-			
-			
-			
+		
+		
 //		handeling unprocessed TruckNo.
 		String truckNo = truckRequest.getTruckNo();
-			
-			
-			
+		
+//		Invalid TruckID
+		if(!truckNo.matches("^[A-Za-z]{2}[ -/]{0,1}[0-9]{1,2}[ -/]{0,1}(?:[A-Za-z]{0,1})[ -/]{0,1}[A-Za-z]{0,2}[ -/]{0,1}[0-9]{1,4}$")){
+			truckCreateResponse.setStatus(truckConstants.getTruckNoIsInvalid());
+			return truckCreateResponse;
+		}
+					
 //		removing all unnecessary sign's or spaces.
+//		Example: converts "AP-31-RT-4555" to "AP31RT4555" i.e removes all extra spaces and charectors
 		String str="";
 		for(int i=0;i<truckNo.length();i++){
 			
@@ -64,59 +67,47 @@ public class TruckServiceImpl {
 			}
 		}
 			
-			
-			
-//		If truckNo is empty.
-		if(str==""){
-			
-			truckCreateResponse.setStatus("Failed: truckNo Cannot be Empty");
-			return truckCreateResponse;
-		}
-			
-			
-			
+				
 //		dividing string based on contenueous sequence of integers or charectors.
 //		to increase readability
 		String truckNoUpdated="";
-		for(int i=0;i<str.length();i++){
+
+//		iterate till last 4th index
+		for(int i=0;i<str.length()-4;i++){
 		
 			truckNoUpdated+=str.charAt(i);
-				
-			if(i>=str.length()-1)
-				break;
-				
+		
 			int l1 = Integer.valueOf(str.charAt(i));
 			int l2 = Integer.valueOf(str.charAt(i+1));
+//			compares present and next charector having same type or not, if different type, add's extra space
+//			Example: converts "AP32EEE4444" to "AP 32 EEE" i.e all integers and charectors seperated
 			if((l1>=48&&l1<=57&&(l2<48||l2>57))||(l2>=48&&l2<=57&&(l1<48||l1>57))){
 				
 					truckNoUpdated+=' ';
 			}
 		}
-			
-			
-		truckRequest.setTruckNo(truckNoUpdated);
-			
-			
-			
-//		handeling already existed same TruckId and TransporterId case
-		List<TruckData> check =  truckDao.findByTransporterId(truckRequest.getTransporterId());
+		
 
-		if(!(Objects.isNull(check))){
-			
-//	      (Objects.isNull(check))&&check.getTruckNo().equals(truckRequest.getTruckNo())
-			for(int i=0;i<check.size();i++){
-				
-				if(check.get(i).getTruckNo().equals(truckRequest.getTruckNo())){
-					
-					truckCreateResponse.setStatus("Failed: TruckId is already Associated with TransporterId");
-//					System.out.println(1);
-					return truckCreateResponse;
-				}
-			}
-				
-				
+		if(truckNoUpdated.charAt(truckNoUpdated.length()-1)!=' ')
+		{
+			truckNoUpdated+=' ';
 		}
-			
+//		add's the remaining last 4digits of truckNumber
+		truckNoUpdated+=str.substring(str.length()-4,str.length());
+
+		
+		truckRequest.setTruckNo(truckNoUpdated);
+		
+		
+//		handeling already existed same TruckNo and TransporterId case
+		List<TruckData> check = truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(),truckRequest.getTruckNo());
+		
+		if(check.size()!=0)
+		{
+			truckCreateResponse.setStatus(truckConstants.getExistingTruckAndTransporter());
+			return truckCreateResponse;
+		}
+		
 			
 //		sending data to TruckData Table.
 		TruckData data = new TruckData();
@@ -126,7 +117,7 @@ public class TruckServiceImpl {
 		data.setTruckNo(truckRequest.getTruckNo());
 		data.setApproved(false);
 		data.setImei(null);
-			
+		
 		truckDao.save(data);
 		
 			
@@ -134,13 +125,11 @@ public class TruckServiceImpl {
 		TruckTransporterData sData = new TruckTransporterData();
 		sData.setTransporterId(truckRequest.getTransporterId());
 		sData.setTruckId(truckId_temp);
-			
+		
 		sTruckDao.save(sData);
-
-			
 			
 //		Sending success postResponse
-		truckCreateResponse.setStatus("Success");
+		truckCreateResponse.setStatus(truckConstants.getSuccess());
 		truckCreateResponse.setId(truckRequest.getTransporterId());
 		
 		return truckCreateResponse;
@@ -148,21 +137,16 @@ public class TruckServiceImpl {
 	}
 	
 	
-
-	
 //	update the approved and imei status
 	public TruckUpdateResponse updateData(String id,TruckUpdateRequest truckUpdateRequest) {
-//		TODO Auto-generated method stub
 
 		TruckUpdateResponse response = new TruckUpdateResponse();
 		TruckData temp = truckDao.findByTruckId(id);
 		if(temp==null)
 		{
-			response.setStatus("False");
+			response.setStatus(truckConstants.getFailure());
 			return response;
 		}
-		
-		
 		
 		if(truckUpdateRequest.getImei()!=null)
 		{
@@ -176,7 +160,14 @@ public class TruckServiceImpl {
             
 			String truckNo = truckUpdateRequest.getTruckNo();
 			
+//			Invalid TruckID
+			if(!truckNo.matches("^[A-Za-z]{2}[ -/]{0,1}[0-9]{1,2}[ -/]{0,1}(?:[A-Za-z]{0,1})[ -/]{0,1}[A-Za-z]{0,2}[ -/]{0,1}[0-9]{1,4}$")){
+				response.setStatus(truckConstants.getTruckNoIsInvalid());
+				return response;
+			}
+			
 //			removing all unnecessary sign's or spaces.
+//	        Example: converts "AP-31-RT-4555" to "AP31RT4555" i.e removes all extra spaces and charectors
 			String str="";
 			for(int i=0;i<truckNo.length();i++)
 			{
@@ -186,62 +177,60 @@ public class TruckServiceImpl {
 				}
 			}
 			
-//			If truckNo is empty.
-			if(str=="")
-			{
-				response.setStatus("Failed: truckNo Cannot be Empty");
-				return response;
-			}
-			
 			
 //			dividing string based on contineous sequence of integers or charectors.
 //			to increase readability
 			String truckNoUpdated="";
-			for(int i=0;i<str.length();i++)
+
+			for(int i=0;i<str.length()-4;i++)
 			{
 				truckNoUpdated+=str.charAt(i);
 				
-				if(i>=str.length()-1)
-					break;
-				
 				int l1 = Integer.valueOf(str.charAt(i));
 				int l2 = Integer.valueOf(str.charAt(i+1));
+//				compares present and next charector having same type or not, if different type, add's extra space
+//				Example: converts "AP32EEE4444" to "AP 32 EEE" i.e all integers and charectors seperated
 				if((l1>=48&&l1<=57&&(l2<48||l2>57))||(l2>=48&&l2<=57&&(l1<48||l1>57)))
 				{
 					truckNoUpdated+=' ';
 				}
-			}
+			}	
 			
+
+			if(truckNoUpdated.charAt(truckNoUpdated.length()-1)!=' ')
+			{
+				truckNoUpdated+=' ';
+			}
+//			add's the remaining last 4digits of truckNumber
+			truckNoUpdated+=str.substring(str.length()-4,str.length());
+
 			
 //			handeling after Updated, existing two elements with same TruckId and TransporterId case
 			List<TruckData> listTruckData = truckDao.findByTruckNo(truckNoUpdated);
-			for(int i=0;i<listTruckData.size();i++)
+			
+			for(TruckData truckData: listTruckData)
 			{
-				if(listTruckData.get(i).getTransporterId().equals(temp.getTransporterId()))
+				if(truckData.getTransporterId().equals(temp.getTransporterId()))
 				{
-					response.setStatus("Failed: After Updating, Two elements Exists with same TruckId and TransporterId");
+					response.setStatus(truckConstants.getUpExistingTruckAndTransporter());
 					return response;
 				}
 			}
-						
+					
 			
 			temp.setTruckNo(truckNoUpdated);
 			temp.setApproved(false);
 		}
 		
 		
-		
 		if(truckUpdateRequest.getApproved()!=null)
 			temp.setApproved(truckUpdateRequest.getApproved());
 		
 		truckDao.save(temp);
-		response.setStatus("Success");
+		response.setStatus(truckConstants.getSuccess());
 		return response;
 	}
 
-	
-	
-	
 	
 //	delete a data
 	public void deleteData(String id) {
@@ -257,20 +246,16 @@ public class TruckServiceImpl {
 	}
 
 	
-	
 //	get truck data by the truck id
 	public TruckData getDataById(String Id) {
 //		TODO Auto-generated method stub
-              return truckDao.findByTruckId(Id);
-                
+              return truckDao.findByTruckId(Id);             
 	}
 
 	
-	
-	
 //	get pageable
-	public List<TruckData> getTruckDataPagableService(Integer pageNo,String transporterId,Boolean approved)
-	{
+	public List<TruckData> getTruckDataPagableService(Integer pageNo,String transporterId,Boolean approved){
+		
 		if(pageNo==null)
 			pageNo=0;
 		if(transporterId!=null&&approved==null)
@@ -288,10 +273,7 @@ public class TruckServiceImpl {
 			Pageable p = PageRequest.of(pageNo,2);
 			return truckDao.findByTransporterIdAndApproved(transporterId,approved,p);
 		}
-		else
-		{
-			return truckDao.findAll();
-		}
+		return null;
 	}
 	
 	
