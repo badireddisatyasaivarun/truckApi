@@ -32,7 +32,7 @@ public class TruckServiceImpl {
 	@Autowired
 	private SecondTruckDao sTruckDao;
 	
-	private TruckConstants truckConstants = new TruckConstants();
+	private TruckConstants truckConstants;
 	
 	public TruckCreateResponse addData(TruckRequest truckRequest) {
 		
@@ -42,7 +42,7 @@ public class TruckServiceImpl {
 			
 //		handeling for in-correct transporterId as NULL;
 		if(truckRequest.getTransporterId()==null){
-			truckCreateResponse.setStatus(truckConstants.getInCorrectTransporterId());
+			truckCreateResponse.setStatus(truckConstants.inCorrectTransporterId);
 			return truckCreateResponse;
 		}
 		
@@ -52,7 +52,7 @@ public class TruckServiceImpl {
 		
 //		Invalid TruckID
 		if(!truckNo.matches("^[A-Za-z]{2}[ -/]{0,1}[0-9]{1,2}[ -/]{0,1}(?:[A-Za-z]{0,1})[ -/]{0,1}[A-Za-z]{0,2}[ -/]{0,1}[0-9]{1,4}$")){
-			truckCreateResponse.setStatus(truckConstants.getTruckNoIsInvalid());
+			truckCreateResponse.setStatus(truckConstants.truckNoIsInvalid);
 			return truckCreateResponse;
 		}
 					
@@ -104,7 +104,7 @@ public class TruckServiceImpl {
 		
 		if(check.size()!=0)
 		{
-			truckCreateResponse.setStatus(truckConstants.getExistingTruckAndTransporter());
+			truckCreateResponse.setStatus(truckConstants.existingTruckAndTransporter);
 			return truckCreateResponse;
 		}
 		
@@ -129,7 +129,7 @@ public class TruckServiceImpl {
 		sTruckDao.save(sData);
 			
 //		Sending success postResponse
-		truckCreateResponse.setStatus(truckConstants.getSuccess());
+		truckCreateResponse.setStatus(truckConstants.success);
 		truckCreateResponse.setId(truckRequest.getTransporterId());
 		
 		return truckCreateResponse;
@@ -144,7 +144,7 @@ public class TruckServiceImpl {
 		TruckData temp = truckDao.findByTruckId(id);
 		if(temp==null)
 		{
-			response.setStatus(truckConstants.getFailure());
+			response.setStatus(truckConstants.failure);
 			return response;
 		}
 		
@@ -162,7 +162,7 @@ public class TruckServiceImpl {
 			
 //			Invalid TruckID
 			if(!truckNo.matches("^[A-Za-z]{2}[ -/]{0,1}[0-9]{1,2}[ -/]{0,1}(?:[A-Za-z]{0,1})[ -/]{0,1}[A-Za-z]{0,2}[ -/]{0,1}[0-9]{1,4}$")){
-				response.setStatus(truckConstants.getTruckNoIsInvalid());
+				response.setStatus(truckConstants.truckNoIsInvalid);
 				return response;
 			}
 			
@@ -212,7 +212,7 @@ public class TruckServiceImpl {
 			{
 				if(truckData.getTransporterId().equals(temp.getTransporterId()))
 				{
-					response.setStatus(truckConstants.getUpExistingTruckAndTransporter());
+					response.setStatus(truckConstants.upExistingTruckAndTransporter);
 					return response;
 				}
 			}
@@ -227,7 +227,7 @@ public class TruckServiceImpl {
 			temp.setApproved(truckUpdateRequest.getApproved());
 		
 		truckDao.save(temp);
-		response.setStatus(truckConstants.getSuccess());
+		response.setStatus(truckConstants.success);
 		return response;
 	}
 

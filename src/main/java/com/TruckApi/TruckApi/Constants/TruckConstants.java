@@ -1,15 +1,12 @@
 package com.TruckApi.TruckApi.Constants;
 
-import lombok.Data;
+public class TruckConstants {
 
-
-public @Data class TruckConstants {
-
-	private String inCorrectTransporterId = "Failed: Enter Correct Transporter Id";
-	private String truckNoIsInvalid = "Failed: Enter Correct Truck Number";
-	private String existingTruckAndTransporter = "Failed: TruckNo is already Associated with TransporterId";
-	private String upExistingTruckAndTransporter = "Failed: After Updating, Two elements Exists with same TruckNo and TransporterId";
-	private String success = "Success";
-	private String failure = "Failed";
+	public static String inCorrectTransporterId = "Failed: Enter Correct Transporter Id";
+	public static String truckNoIsInvalid = "Failed: Enter Correct Truck Number";
+	public static String existingTruckAndTransporter = "Failed: TruckNo is already Associated with TransporterId";
+	public static String upExistingTruckAndTransporter = "Failed: After Updating, Two elements Exists with same TruckNo and TransporterId";
+	public static String success = "Success";
+	public static String failure = "Failed";
 	
 }
