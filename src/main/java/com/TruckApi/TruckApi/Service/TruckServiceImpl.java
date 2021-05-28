@@ -31,11 +31,8 @@ import com.TruckApi.TruckApi.entities.TruckTransporterData;
 @Service
 public class TruckServiceImpl implements TruckService {
 
-//	Creating dao interface for truck and its datails 
 	@Autowired
 	TruckDao truckDao;
-	
-//	Creating dao interface for truck - transporter table
 	@Autowired
 	 SecondTruckDao sTruckDao;
 	
@@ -44,25 +41,25 @@ public class TruckServiceImpl implements TruckService {
 	@Override
 	public TruckCreateResponse addData(TruckRequest truckRequest) {
 		
-//	    object for postResponse
+
 		TruckCreateResponse truckCreateResponse = new TruckCreateResponse();
 			
 			
-//		handeling for in-correct transporterId as NULL;
 		if(truckRequest.getTransporterId()==null){
 			truckCreateResponse.setStatus(truckConstants.inCorrectTransporterId);
 			return truckCreateResponse;
 		}
 		
 		
-//		handeling unprocessed TruckNo.
+		if(truckRequest.getTruckNo()==null){
+			truckCreateResponse.setStatus(truckConstants.truckNoIsInvalid);
+			return truckCreateResponse;
+		}
 		String truckNo = truckRequest.getTruckNo();
 		
 //		Invalid TruckID
 		String checkTruckNo="^[A-Za-z]{2}[ -/]{0,1}[0-9]{1,2}[ -/]{0,1}(?:[A-Za-z]{0,1})[ -/]{0,1}[A-Za-z]{0,2}[ -/]{0,1}[0-9]{4}$";
 		 
-		//(([A-Za-z]){2,3}(|-)(?:[0-9]){1,2}(|-)(?:[A-Za-z]){2}(|-)([0-9]){1,4})|(([A-Za-z]){2,3}(|-)([0-9]){1,4})
-		//"^[A-Za-z]{2}[ -/]{0,1}[0-9]{1,2}[ -/]{0,1}(?:[A-Za-z]{0,1})[ -/]{0,1}[A-Za-z]{0,2}[ -/]{0,1}[0-9]{1,4}$"
 		
 		if(!truckNo.matches(checkTruckNo)){
 			truckCreateResponse.setStatus(truckConstants.truckNoIsInvalid);
@@ -81,7 +78,7 @@ public class TruckServiceImpl implements TruckService {
 		}
 			
 				
-//		dividing string based on contenueous sequence of integers or charectors.
+//		dividing string based on continuous sequence of integers or character.
 //		to increase readability
 		String truckNoUpdated="";
 
@@ -92,8 +89,8 @@ public class TruckServiceImpl implements TruckService {
 		
 			int l1 = Integer.valueOf(str.charAt(i));
 			int l2 = Integer.valueOf(str.charAt(i+1));
-//			compares present and next charector having same type or not, if different type, add's extra space
-//			Example: converts "AP32EEE4444" to "AP 32 EEE" i.e all integers and charectors seperated
+//			compares present and next character having same type or not, if different type, add's extra space
+//			Example: converts "AP32EEE4444" to "AP 32 EEE" i.e all integers and characters separate
 			if((l1>=48&&l1<=57&&(l2<48||l2>57))||(l2>=48&&l2<=57&&(l1<48||l1>57))){
 				
 					truckNoUpdated+=' ';
@@ -105,15 +102,13 @@ public class TruckServiceImpl implements TruckService {
 		{
 			truckNoUpdated+=' ';
 		}
-//		add's the remaining last 4digits of truckNumber
+		
+        //add's the remaining last 4digits of truckNumber
 		truckNoUpdated+=str.substring(str.length()-4,str.length());
 
 		
-		//truckRequest.setTruckNo(truckNoUpdated);
-		
-		
-//		handeling already existed same TruckNo and TransporterId case
-		List<TruckData> check = truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(),truckRequest.getTruckNo());
+        //handling already existed same TruckNo and TransporterId case
+		List<TruckData> check = truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(),truckNoUpdated);
 		
 		if(check.size()!=0)
 		{
@@ -131,21 +126,17 @@ public class TruckServiceImpl implements TruckService {
 		String truckId_temp = "truck:"+UUID.randomUUID().toString();
 		data.setTruckId(truckId_temp);
 		data.setTransporterId(truckRequest.getTransporterId());
-		data.setTruckNo(truckRequest.getTruckNo());
+		data.setTruckNo(truckNoUpdated);
 		
 		if(truckRequest.getImei()!=null) {
 			data.setImei(truckRequest.getImei());
 		}
-		if(truckRequest.getPassingWeight()!=0.0) {
+		if(truckRequest.getPassingWeight()!=0) {
 			data.setPassingWeight(truckRequest.getPassingWeight());
 		}
 		if(truckRequest.getDriverId()!=null) {
 			data.setDriverId(truckRequest.getDriverId());
 		}
-		
-		
-		System.out.println("hey: "+TruckType.OPEN_BODY_TRUCK);
-		System.out.println("hey1: "+truckRequest.getTruckType());
 		
 		if(truckRequest.getTruckType()!=null) {
 			
@@ -210,7 +201,7 @@ public class TruckServiceImpl implements TruckService {
 		TruckData td=new TruckData();
 
 		
-		Optional<TruckData> d = truckDao.findById(id);
+		Optional<TruckData> d = Optional.ofNullable(truckDao.findByTruckId(id));
 		if(d.isPresent()) {
 			td = d.get();
 		}
@@ -220,12 +211,14 @@ public class TruckServiceImpl implements TruckService {
 		}
 		
 		
+		
+		
 		if(truckUpdateRequest.getImei()!=null)
 		{
 			td.setImei(truckUpdateRequest.getImei());
-			}
+		}
 		
-		if(truckUpdateRequest.getPassingWeight()!=0.0)
+		if(truckUpdateRequest.getPassingWeight()!=0)
 		{
 			td.setPassingWeight(truckUpdateRequest.getPassingWeight());
 			}
@@ -294,14 +287,12 @@ public class TruckServiceImpl implements TruckService {
 			truckDeleteResponse.setStatus(truckConstants.AccountNotFoundError);
 			return truckDeleteResponse;	
 		}
-		else if(!Objects.isNull(temp2) && !Objects.isNull(temp)) {
+		else {
 			truckDao.delete(temp);
 			sTruckDao.delete(temp2);
 			truckDeleteResponse.setStatus(truckConstants.deleteSuccess);
 			return truckDeleteResponse;	
 		}
-		
-		return truckDeleteResponse;
 			
 		
 	}
