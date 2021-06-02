@@ -27,6 +27,7 @@ import com.TruckApi.TruckApi.Constants.TruckConstants;
 import com.TruckApi.TruckApi.Dao.SecondTruckDao;
 import com.TruckApi.TruckApi.Dao.TruckDao;
 import com.TruckApi.TruckApi.Model.TruckCreateResponse;
+import com.TruckApi.TruckApi.Model.TruckDeleteResponse;
 import com.TruckApi.TruckApi.Model.TruckRequest;
 import com.TruckApi.TruckApi.Model.TruckUpdateRequest;
 import com.TruckApi.TruckApi.Model.TruckUpdateRequest;
@@ -43,10 +44,7 @@ import com.TruckApi.TruckApi.entities.TruckTransporterData;
 @SpringBootTest
 public class TestTruckService {
 
-	
-//	@Autowired
-//	private TruckService truckService;
-//	
+
 	@Autowired
 	private TruckServiceImpl truckService;
 	
@@ -60,7 +58,7 @@ public class TestTruckService {
 	
 
 	@Test
-	public void AddTruckCase1Test() {
+	public void addDataSuccess() {
 		
 		//When Everythimg Is Fine
 		TruckRequest truckRequest = new TruckRequest();
@@ -94,7 +92,7 @@ public class TestTruckService {
 	
 	
 	@Test
-	public void AddTruckCase2Test(){
+	public void addDataFailed_invalidTransporterId(){
 		
 		//When Transporter Id Is Null
 		TruckRequest truckRequest = new TruckRequest();
@@ -126,7 +124,7 @@ public class TestTruckService {
 	
 	
 	@Test
-	public void AddTruckCase3Test(){
+	public void addDataFailed_invalidTruckNo(){
 		
 		//When TruckNo Is NULL
 		TruckRequest truckRequest = new TruckRequest();
@@ -157,12 +155,15 @@ public class TestTruckService {
 	}
 	
 	
+	
 	@Test
-	public void AddTruckCase4Test(){
+	public void addDataFailed_TruckNoAlreadyExisted(){
 		
 		// When TruckId is already present with the same TransporterId
 	
-		
+		/*
+		 * I am not sure for this test case......
+		 */
 	
 		TruckRequest truckRequest = new TruckRequest();
 		TruckCreateResponse truckCreateResponse = new TruckCreateResponse();
@@ -178,16 +179,14 @@ public class TestTruckService {
 		truckCreateResponse.setStatus(TruckConstants.existingTruckAndTransporter);
 
 		when(truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(),truckRequest.getTruckNo())).thenReturn(Stream.of(t1,t2).collect(Collectors.toList()));
-		
-		System.out.println(truckCreateResponse);
-	//	System.out.println(truckService.addData(truckRequest));
-
+	
 	    assertEquals(truckCreateResponse,truckService.addData(truckRequest));
 	}
 	
 	
+	
 	@Test
-	public void getTruckDataWithIdTest()
+	public void getTruckDataWithIdSuccess()
 	{
 		// get all Data
 		TruckData truckData = new TruckData();
@@ -207,9 +206,8 @@ public class TestTruckService {
 	
 	
 	@Test
-	public void updateTruckCase1Test(){
+	public void updateSuccess(){
 		
-		//Updating Passing weight Only 
 		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
 		TruckUpdateResponse response = new TruckUpdateResponse();
 		TruckRequest truckRequest = new TruckRequest();
@@ -232,188 +230,8 @@ public class TestTruckService {
 			truckData.setPassingWeight(truckRequest.getPassingWeight());
 				
 			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
-		//TruckData truckData = new TruckData();
 		
 			truckUpdateRequest.setPassingWeight(30);
-			
-			response.setStatus(TruckConstants.updateSuccess);
-			response.setTransporterId(truckData.getTransporterId());
-			response.setTruckId(truckId);
-			
-		//when(truckDao.save(truckData)).thenReturn(truckData);	
-		
-
-		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));
-
-	}
-	
-	
-	@Test
-	public void updateTruckCase2Test(){
-		
-		//Updating Only IMEI
-		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
-		TruckUpdateResponse response = new TruckUpdateResponse();
-		TruckRequest truckRequest = new TruckRequest();
-		
-		TruckData truckData = new TruckData();
-			
-		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
-				
-				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
-				truckRequest.setTruckNo("He 23 re 4444");
-				truckRequest.setDriverId("driver:abcd");
-				truckRequest.setImei("alpha");
-				truckRequest.setPassingWeight(50);
-				
-			truckData.setTruckId(truckId);
-			truckData.setTransporterId(truckRequest.getTransporterId());
-			truckData.setTruckNo(truckRequest.getTruckNo());
-			truckData.setDriverId(truckRequest.getDriverId());
-			truckData.setImei(truckRequest.getImei());
-			truckData.setPassingWeight(truckRequest.getPassingWeight());
-				
-			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
-		//TruckData truckData = new TruckData();
-		
-			truckUpdateRequest.setImei("alphabeta");
-			
-			//truckData.setImei(truckUpdateRequest.getImei());
-			
-		//truckUpdateRequest.setTruckApproved(true);
-			//when(truckDao.findByTruckId(truckId)).thenReturn(truckData);
-			
-			response.setStatus(TruckConstants.updateSuccess);
-			response.setTransporterId(truckData.getTransporterId());
-			response.setTruckId(truckId);
-			
-		//when(truckDao.save(truckData)).thenReturn(truckData);	
-		
-
-		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));
-	}
-	
-	
-	@Test
-	public void updateTruckCase3Test(){
-		
-		//Updating Only DriverId
-		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
-		TruckUpdateResponse response = new TruckUpdateResponse();
-		TruckRequest truckRequest = new TruckRequest();
-		
-		TruckData truckData = new TruckData();
-			
-		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
-				
-				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
-				truckRequest.setTruckNo("He 23 re 4444");
-				truckRequest.setDriverId("driver:abcd");
-				truckRequest.setImei("alpha");
-				truckRequest.setPassingWeight(50);
-				
-			truckData.setTruckId(truckId);
-			truckData.setTransporterId(truckRequest.getTransporterId());
-			truckData.setTruckNo(truckRequest.getTruckNo());
-			truckData.setDriverId(truckRequest.getDriverId());
-			truckData.setImei(truckRequest.getImei());
-			truckData.setPassingWeight(truckRequest.getPassingWeight());
-				
-			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
-		//TruckData truckData = new TruckData();
-		
-			truckUpdateRequest.setDriverId("driver:100");
-			
-			//truckData.setDriverId(truckUpdateRequest.getDriverId());
-			
-		//truckUpdateRequest.setTruckApproved(true);
-			//when(truckDao.findByTruckId(truckId)).thenReturn(truckData);
-			
-			response.setStatus(TruckConstants.updateSuccess);
-			response.setTransporterId(truckData.getTransporterId());
-			response.setTruckId(truckId);
-			
-		//when(truckDao.save(truckData)).thenReturn(truckData);	
-		
-
-		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));
-	}
-	
-	
-	
-	@Test
-	public void updateTruckCase4Test(){
-		
-		//Updating Only TruckNo having Null Value
-		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
-		TruckUpdateResponse response = new TruckUpdateResponse();
-		TruckRequest truckRequest = new TruckRequest();
-		
-		TruckData truckData = new TruckData();
-			
-		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
-				
-				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
-				truckRequest.setTruckNo("He 23 re 4444");
-				truckRequest.setDriverId("driver:abcd");
-				truckRequest.setImei("alpha");
-				truckRequest.setPassingWeight(50);
-				truckRequest.setTruckApproved(true);
-				//truckRequest.setTyres(Tyres.EIGHT_TYRES);
-				
-			truckData.setTyres(Tyres.EIGHT_TYRES);	
-			truckData.setTruckId(truckId);
-			truckData.setTransporterId(truckRequest.getTransporterId());
-			truckData.setTruckNo(truckRequest.getTruckNo());
-			truckData.setDriverId(truckRequest.getDriverId());
-			truckData.setImei(truckRequest.getImei());
-			truckData.setPassingWeight(truckRequest.getPassingWeight());
-			
-				
-			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
-		
-		
-			truckUpdateRequest.setTruckApproved(false);
-		
-			response.setStatus(TruckConstants.updateSuccess);
-			response.setTransporterId(truckData.getTransporterId());
-			response.setTruckId(truckId);
-			
-		//when(truckDao.save(truckData)).thenReturn(truckData);	
-		
-
-		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));	
-		
-	}
-	
-	
-	@Test
-	public void updateTruckCase5Test(){
-		
-		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
-		TruckUpdateResponse response = new TruckUpdateResponse();
-		TruckRequest truckRequest = new TruckRequest();
-		
-		TruckData truckData = new TruckData();
-			
-		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
-				
-				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
-				truckRequest.setTruckNo("He 23 re 4444");
-				truckRequest.setDriverId("driver:abcd");
-				truckRequest.setImei("alpha");
-				truckRequest.setPassingWeight(50);
-				
-			truckData.setTruckId(truckId);
-			truckData.setTransporterId(truckRequest.getTransporterId());
-			truckData.setTruckNo(truckRequest.getTruckNo());
-			truckData.setDriverId(truckRequest.getDriverId());
-			truckData.setImei(truckRequest.getImei());
-			truckData.setPassingWeight(truckRequest.getPassingWeight());
-				
-			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
-		//TruckData truckData = new TruckData();
-		
 			truckUpdateRequest.setDriverId("driver:100");
 			truckUpdateRequest.setPassingWeight(100);
 			truckUpdateRequest.setImei("beta");
@@ -422,18 +240,199 @@ public class TestTruckService {
 			response.setStatus(TruckConstants.updateSuccess);
 			response.setTransporterId(truckData.getTransporterId());
 			response.setTruckId(truckId);
-			
-		//when(truckDao.save(truckData)).thenReturn(truckData);	
 		
 
 		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));
-		
+
 	}
+	
+	
+//	@Test
+//	public void updateTruckCase2Test(){
+//		
+//		//Updating Only IMEI
+//		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
+//		TruckUpdateResponse response = new TruckUpdateResponse();
+//		TruckRequest truckRequest = new TruckRequest();
+//		
+//		TruckData truckData = new TruckData();
+//			
+//		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
+//				
+//				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
+//				truckRequest.setTruckNo("He 23 re 4444");
+//				truckRequest.setDriverId("driver:abcd");
+//				truckRequest.setImei("alpha");
+//				truckRequest.setPassingWeight(50);
+//				
+//			truckData.setTruckId(truckId);
+//			truckData.setTransporterId(truckRequest.getTransporterId());
+//			truckData.setTruckNo(truckRequest.getTruckNo());
+//			truckData.setDriverId(truckRequest.getDriverId());
+//			truckData.setImei(truckRequest.getImei());
+//			truckData.setPassingWeight(truckRequest.getPassingWeight());
+//				
+//			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
+//		//TruckData truckData = new TruckData();
+//		
+//			truckUpdateRequest.setImei("alphabeta");
+//			
+//			//truckData.setImei(truckUpdateRequest.getImei());
+//			
+//		//truckUpdateRequest.setTruckApproved(true);
+//			//when(truckDao.findByTruckId(truckId)).thenReturn(truckData);
+//			
+//			response.setStatus(TruckConstants.updateSuccess);
+//			response.setTransporterId(truckData.getTransporterId());
+//			response.setTruckId(truckId);
+//			
+//		//when(truckDao.save(truckData)).thenReturn(truckData);	
+//		
+//
+//		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));
+//	}
+//	
+//	
+//	@Test
+//	public void updateTruckCase3Test(){
+//		
+//		//Updating Only DriverId
+//		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
+//		TruckUpdateResponse response = new TruckUpdateResponse();
+//		TruckRequest truckRequest = new TruckRequest();
+//		
+//		TruckData truckData = new TruckData();
+//			
+//		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
+//				
+//				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
+//				truckRequest.setTruckNo("He 23 re 4444");
+//				truckRequest.setDriverId("driver:abcd");
+//				truckRequest.setImei("alpha");
+//				truckRequest.setPassingWeight(50);
+//				
+//			truckData.setTruckId(truckId);
+//			truckData.setTransporterId(truckRequest.getTransporterId());
+//			truckData.setTruckNo(truckRequest.getTruckNo());
+//			truckData.setDriverId(truckRequest.getDriverId());
+//			truckData.setImei(truckRequest.getImei());
+//			truckData.setPassingWeight(truckRequest.getPassingWeight());
+//				
+//			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
+//		//TruckData truckData = new TruckData();
+//		
+//			truckUpdateRequest.setDriverId("driver:100");
+//			
+//			//truckData.setDriverId(truckUpdateRequest.getDriverId());
+//			
+//		//truckUpdateRequest.setTruckApproved(true);
+//			//when(truckDao.findByTruckId(truckId)).thenReturn(truckData);
+//			
+//			response.setStatus(TruckConstants.updateSuccess);
+//			response.setTransporterId(truckData.getTransporterId());
+//			response.setTruckId(truckId);
+//			
+//		//when(truckDao.save(truckData)).thenReturn(truckData);	
+//		
+//
+//		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));
+//	}
+//	
+//	
+//	
+//	@Test
+//	public void updateTruckCase4Test(){
+//		
+//		//Updating Only TruckNo having Null Value
+//		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
+//		TruckUpdateResponse response = new TruckUpdateResponse();
+//		TruckRequest truckRequest = new TruckRequest();
+//		
+//		TruckData truckData = new TruckData();
+//			
+//		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
+//				
+//				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
+//				truckRequest.setTruckNo("He 23 re 4444");
+//				truckRequest.setDriverId("driver:abcd");
+//				truckRequest.setImei("alpha");
+//				truckRequest.setPassingWeight(50);
+//				truckRequest.setTruckApproved(true);
+//				//truckRequest.setTyres(Tyres.EIGHT_TYRES);
+//				
+//			truckData.setTyres(Tyres.EIGHT_TYRES);	
+//			truckData.setTruckId(truckId);
+//			truckData.setTransporterId(truckRequest.getTransporterId());
+//			truckData.setTruckNo(truckRequest.getTruckNo());
+//			truckData.setDriverId(truckRequest.getDriverId());
+//			truckData.setImei(truckRequest.getImei());
+//			truckData.setPassingWeight(truckRequest.getPassingWeight());
+//			
+//				
+//			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
+//		
+//		
+//			truckUpdateRequest.setTruckApproved(false);
+//		
+//			response.setStatus(TruckConstants.updateSuccess);
+//			response.setTransporterId(truckData.getTransporterId());
+//			response.setTruckId(truckId);
+//			
+//		//when(truckDao.save(truckData)).thenReturn(truckData);	
+//		
+//
+//		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));	
+//		
+//	}
+//	
+//	
+//	@Test
+//	public void updateTruckCase5Test(){
+//		
+//		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
+//		TruckUpdateResponse response = new TruckUpdateResponse();
+//		TruckRequest truckRequest = new TruckRequest();
+//		
+//		TruckData truckData = new TruckData();
+//			
+//		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
+//				
+//				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
+//				truckRequest.setTruckNo("He 23 re 4444");
+//				truckRequest.setDriverId("driver:abcd");
+//				truckRequest.setImei("alpha");
+//				truckRequest.setPassingWeight(50);
+//				
+//			truckData.setTruckId(truckId);
+//			truckData.setTransporterId(truckRequest.getTransporterId());
+//			truckData.setTruckNo(truckRequest.getTruckNo());
+//			truckData.setDriverId(truckRequest.getDriverId());
+//			truckData.setImei(truckRequest.getImei());
+//			truckData.setPassingWeight(truckRequest.getPassingWeight());
+//				
+//			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
+//		//TruckData truckData = new TruckData();
+//		
+//			truckUpdateRequest.setDriverId("driver:100");
+//			truckUpdateRequest.setPassingWeight(100);
+//			truckUpdateRequest.setImei("beta");
+//			
+//			
+//			response.setStatus(TruckConstants.updateSuccess);
+//			response.setTransporterId(truckData.getTransporterId());
+//			response.setTruckId(truckId);
+//			
+//		//when(truckDao.save(truckData)).thenReturn(truckData);	
+//		
+//
+//		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));
+//		
+//	}
 	
 
 	
 	@Test
-	public void updateTruckCase6Test(){
+	public void updateDataFailed_AccountNotFound(){
 		
 		// Truck Data doesn't Exists with given TruckId
 		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest();
@@ -459,7 +458,7 @@ public class TestTruckService {
 			truckData.setImei(truckRequest.getImei());
 			truckData.setPassingWeight(truckRequest.getPassingWeight());
 				
-			when(truckDao.findByTruckId(truckId1)).thenReturn(truckData);		
+			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
 		//TruckData truckData = new TruckData();
 		
 			truckUpdateRequest.setPassingWeight(30);
@@ -470,13 +469,13 @@ public class TestTruckService {
 	//	when(truckDao.save(truckData)).thenReturn(truckData);	
 		
 
-		assertEquals(response,truckService.updateData(truckId, truckUpdateRequest));
+		assertEquals(response,truckService.updateData(truckId1, truckUpdateRequest));
 
 	}
 	
 
 	@Test
-	public void getTruckDataPagableCase1Test(){
+	public void getTruckDataPagableSuccess_TransporterId(){
 		
 		//Getting All TruckData having Given TransporterId default PageNo=0 
 		Integer pageNo;
@@ -531,7 +530,7 @@ public class TestTruckService {
 	
 	
 	@Test
-	public void getTruckDataPagableCase2Test(){
+	public void getTruckDataPagableSuccess_TruckApproved(){
 		
 		//Getting All TruckData Which have Approved is True 
 		Integer pageNo;
@@ -580,7 +579,7 @@ public class TestTruckService {
 		}
 
 	@Test
-	public void getTruckDataPagableCase3Test(){
+	public void getTruckDataPagableSuccess_TransporterIdAndTruckApproved(){
 		
 		//Getting All TruckData with Approved true and With Given TransporterID;
 		Integer pageNo;
@@ -605,8 +604,6 @@ public class TestTruckService {
 		listTruckData.add(t6);
 		
 		
-		//Case:1
-		
 		transporterId = "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb68";
 		truckApproved = true;
 		String truckId=null;
@@ -630,27 +627,92 @@ public class TestTruckService {
 	
 	
 	@Test
-	public void deleteTest(){
+	public void deleteDataSuccess(){
+	
+		TruckDeleteResponse response = new TruckDeleteResponse();
+		TruckRequest truckRequest = new TruckRequest();
 		
-		//Deleting Both TruckData and TruckTranspoerterData with TruckId
 		TruckData truckData = new TruckData();
-		truckData.setTruckId("truckId:62cc8557-52cd-4742-a11e-276cc7bec12e");
-		truckData.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
-		when(truckDao.findByTruckId("truckId:62cc8557-52cd-4742-a11e-276cc7bec12e")).thenReturn(truckData);
+			
+		String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
+				
+				truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
+				truckRequest.setTruckNo("He 23 re 4444");
+				truckRequest.setDriverId("driver:abcd");
+				truckRequest.setImei("alpha");
+				truckRequest.setPassingWeight(50);
+				
+			truckData.setTruckId(truckId);
+			truckData.setTransporterId(truckRequest.getTransporterId());
+			truckData.setTruckNo(truckRequest.getTruckNo());
+			truckData.setDriverId(truckRequest.getDriverId());
+			truckData.setImei(truckRequest.getImei());
+			truckData.setPassingWeight(truckRequest.getPassingWeight());
+			
+			
+			TruckTransporterData truckTransporterData = new TruckTransporterData();
+			truckTransporterData.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
+	        truckTransporterData.setTruckId(truckId);
+	        
+	        when(sTruckDao.findByTruckId(truckId)).thenReturn(truckTransporterData);
+
+				
+			when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
 		
-		
-		TruckTransporterData truckTransporterData = new TruckTransporterData();
-		truckTransporterData.setTruckId("truckId:62cc8557-52cd-4742-a11e-276cc7bec12e");
-        truckTransporterData.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
-        when(sTruckDao.findByTruckId("truckId:62cc8557-52cd-4742-a11e-276cc7bec12e")).thenReturn(truckTransporterData);
-        
-        truckService.deleteData("truckId:62cc8557-52cd-4742-a11e-276cc7bec12e");
-        verify(truckDao,times(1)).delete(truckData);
-		verify(sTruckDao,times(1)).delete(truckTransporterData);
-		//veri
+			
+			response.setStatus(TruckConstants.deleteSuccess);
+			
+		assertEquals(response,truckService.deleteData(truckId));
+
      
 	}
 	
+	
+	
+	@Test
+	public void deleteDataFailed_AccountNotFound(){
+		
+		
+		TruckRequest truckRequest = new TruckRequest();
+		
+		TruckData truckData = new TruckData();
+		
+				
+			TruckDeleteResponse response = new TruckDeleteResponse();
+				
+			
+			String truckId = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";	
+
+			String truckId1 = "truckId:62cc8557-52cd-4742-a11e-276cc7abcde";	
+				
+					truckRequest.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
+					truckRequest.setTruckNo("He 23 re 4444");
+					truckRequest.setDriverId("driver:abcd");
+					truckRequest.setImei("alpha");
+					truckRequest.setPassingWeight(50);
+					
+				truckData.setTruckId(truckId);
+				truckData.setTransporterId(truckRequest.getTransporterId());
+				truckData.setTruckNo(truckRequest.getTruckNo());
+				truckData.setDriverId(truckRequest.getDriverId());
+				truckData.setImei(truckRequest.getImei());
+				truckData.setPassingWeight(truckRequest.getPassingWeight());
+				
+				
+				TruckTransporterData truckTransporterData = new TruckTransporterData();
+				truckTransporterData.setTransporterId("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67");
+		        truckTransporterData.setTruckId(truckId);
+		        
+		        when(sTruckDao.findByTruckId(truckId)).thenReturn(truckTransporterData);
+
+					
+				when(truckDao.findByTruckId(truckId)).thenReturn(truckData);		
+			
+				response.setStatus(TruckConstants.AccountNotFoundError);
+		
+		assertEquals(response,truckService.deleteData(truckId1));
+	
+	}
 	
 
 }
