@@ -31,56 +31,39 @@ public class TruckController {
 
 	@Autowired
 	private TruckService truckService;
-	
-	
+
 	@GetMapping("/truck")
-	@ApiOperation(value="Find Truck Data by transporterId or by approved status with pagination",
-	notes="we provide the requried keys value pairs as a query parameter and get the information of all the truck's with the given key value. if pageNo is provided it i paginated else all the data available will be returned")
-	public List<TruckData> getTruckDataPagable(@RequestParam(value="pageNo",required=false) Integer pageNo,@RequestParam(value="transporterId",required=false) String transporterId,@RequestParam(value="truckApproved",required=false) Boolean truckApproved,@RequestParam(value="truckId",required=false) String truckId)
-	{
-	    return truckService.getTruckDataPagableService(pageNo,transporterId,truckApproved,truckId);
+	@ApiOperation(value = "Find Truck Data by transporterId or by approved status with pagination", notes = "we provide the requried keys value pairs as a query parameter and get the information of all the truck's with the given key value. if pageNo is provided it i paginated else all the data available will be returned")
+	public List<TruckData> getTruckDataPagable(@RequestParam(value = "pageNo", required = false) Integer pageNo,
+			@RequestParam(value = "transporterId", required = false) String transporterId,
+			@RequestParam(value = "truckApproved", required = false) Boolean truckApproved,
+			@RequestParam(value = "truckId", required = false) String truckId) {
+		return truckService.getTruckDataPagableService(pageNo, transporterId, truckApproved, truckId);
 	}
-	
-	
-	
+
 	@GetMapping("/truck/{truckId}")
-	@ApiOperation(value="Find Truck Data by using truckId",
-	notes="we provide the Truck Id as path variable and get the information of that truck")
-	public TruckData getTruckWithId(@PathVariable String truckId)
-	{
+	@ApiOperation(value = "Find Truck Data by using truckId", notes = "we provide the Truck Id as path variable and get the information of that truck")
+	public TruckData getTruckWithId(@PathVariable String truckId) {
 		return truckService.getDataById(truckId);
 	}
-	
-	
+
 	@PostMapping("/truck")
-	@ApiOperation(value="Add a new Truck",
-	notes="We add the truck to the database by providing its transporterId and TruckNo")
-	public TruckCreateResponse addTruck(@RequestBody TruckRequest truckRequest)
-	{
-			return truckService.addData(truckRequest);	
+	@ApiOperation(value = "Add a new Truck", notes = "We add the truck to the database by providing its transporterId and TruckNo")
+	public TruckCreateResponse addTruck(@RequestBody TruckRequest truckRequest) {
+		return truckService.addData(truckRequest);
 	}
-	
-	
-	
+
 	@PutMapping("/truck/{truckId}")
-	@ApiOperation(value="Update details of a particular Truck",
-	notes="We Update the truck Details like IMEI, Approved Status and TruckNo by providing TruckId as a path variable")
-	public TruckUpdateResponse updateTruck(@PathVariable String truckId,@RequestBody TruckUpdateRequest truckUpdateRequest)
-	{
-		return truckService.updateData(truckId,truckUpdateRequest);
+	@ApiOperation(value = "Update details of a particular Truck", notes = "We Update the truck Details like IMEI, Approved Status and TruckNo by providing TruckId as a path variable")
+	public TruckUpdateResponse updateTruck(@PathVariable String truckId,
+			@RequestBody TruckUpdateRequest truckUpdateRequest) {
+		return truckService.updateData(truckId, truckUpdateRequest);
 	}
-	
-	
-	
+
 	@DeleteMapping("/truck/{truckId}")
-	@ApiOperation(value="Delete a Truck",
-	notes="We Delete the truck Details from the database by providing TruckId as a path variable")
-	public TruckDeleteResponse delete(@PathVariable String truckId)
-	{
+	@ApiOperation(value = "Delete a Truck", notes = "We Delete the truck Details from the database by providing TruckId as a path variable")
+	public TruckDeleteResponse delete(@PathVariable String truckId) {
 		return truckService.deleteData(truckId);
 	}
-	
-	
-	
-}
 
+}

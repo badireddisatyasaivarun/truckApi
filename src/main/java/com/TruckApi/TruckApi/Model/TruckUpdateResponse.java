@@ -1,8 +1,16 @@
 package com.TruckApi.TruckApi.Model;
 
-import lombok.Data;
+import com.TruckApi.TruckApi.Model.TruckRequest.TruckType;
+import com.TruckApi.TruckApi.Model.TruckRequest.Tyres;
 
-public @Data class TruckUpdateResponse {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class TruckUpdateResponse {
 	
 	
 	private String status;

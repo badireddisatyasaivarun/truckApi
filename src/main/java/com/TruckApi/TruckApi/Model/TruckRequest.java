@@ -8,9 +8,14 @@ import javax.persistence.Enumerated;
 import com.TruckApi.TruckApi.entities.TruckData.TruckType;
 import com.TruckApi.TruckApi.entities.TruckData.Tyres;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public @Data class TruckRequest {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class TruckRequest {
 
 	private String transporterId;
 	private String truckNo;

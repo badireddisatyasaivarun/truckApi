@@ -17,40 +17,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public @Data class TruckData {
 
-	@Id	
+	@Id
 	private String truckId;
-	
+
 	private String transporterId;
 	private String truckNo;
 	private Boolean truckApproved;
 	private String imei;
 	private long passingWeight;
 	private String driverId;
-	
+
 	@Enumerated(EnumType.STRING)
 	private TruckType truckType;
-	
 
 	@Enumerated(EnumType.STRING)
 	private Tyres tyres;
-	
+
 	public enum TruckType {
-	    LCV,
-	    OPEN_BODY_TRUCK,
-	    CLOSED_CONTAINER,
-	    TRAILER,
-	    TANKER,
-	    TIPPER,
-	    OTHERS
-	  }
-	
-	public enum Tyres{
-		SIX_TYRES,
-		EIGHT_TYRES,
-		OTHERS
+		LCV, OPEN_BODY_TRUCK, CLOSED_CONTAINER, TRAILER, TANKER, TIPPER, OTHERS
 	}
 
-	
+	public enum Tyres {
+		SIX_TYRES, EIGHT_TYRES, OTHERS
+	}
 
 }
-

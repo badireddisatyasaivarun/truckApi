@@ -27,319 +27,292 @@ import com.TruckApi.TruckApi.entities.TruckData.Tyres;
 
 import com.TruckApi.TruckApi.entities.TruckTransporterData;
 
-
 @Service
 public class TruckServiceImpl implements TruckService {
 
 	@Autowired
 	TruckDao truckDao;
 	@Autowired
-	 SecondTruckDao sTruckDao;
-	
+	SecondTruckDao sTruckDao;
+
 	private TruckConstants truckConstants;
-	
+
 	@Override
 	public TruckCreateResponse addData(TruckRequest truckRequest) {
-		
 
 		TruckCreateResponse truckCreateResponse = new TruckCreateResponse();
-			
-			
-		if(truckRequest.getTransporterId()==null){
-			truckCreateResponse.setStatus(truckConstants.inCorrectTransporterId);
+
+		if (truckRequest.getTransporterId() == null) {
+			truckCreateResponse.setStatus(truckConstants.IN_CORRECT_TRANSPORTER_ID);
 			return truckCreateResponse;
 		}
-		
-		
-		if(truckRequest.getTruckNo()==null){
-			truckCreateResponse.setStatus(truckConstants.truckNoIsInvalid);
+
+		if (truckRequest.getTruckNo() == null) {
+			truckCreateResponse.setStatus(truckConstants.TRUCK_NO_IS_INVALID);
 			return truckCreateResponse;
 		}
+
 		String truckNo = truckRequest.getTruckNo();
-		
-//		Invalid TruckID
-		String checkTruckNo="^[A-Za-z]{2}[ -/]{0,1}[0-9]{1,2}[ -/]{0,1}(?:[A-Za-z]{0,1})[ -/]{0,1}[A-Za-z]{0,2}[ -/]{0,1}[0-9]{4}$";
-		 
-		
-		if(!truckNo.matches(checkTruckNo)){
-			truckCreateResponse.setStatus(truckConstants.truckNoIsInvalid);
+
+		String checkTruckNo = TruckConstants.CHECK_TRUCK_NO;
+
+		if (!truckNo.matches(checkTruckNo)) {
+			truckCreateResponse.setStatus(truckConstants.TRUCK_NO_IS_INVALID);
 			return truckCreateResponse;
 		}
-					
-//		removing all unnecessary sign's or spaces.
-//		Example: converts "AP-31-RT-4555" to "AP31RT4555" i.e removes all extra spaces and charectors
-		String str="";
-		for(int i=0;i<truckNo.length();i++){
-			
-		    if(truckNo.charAt(i)!=' '&&truckNo.charAt(i)!='-'&&truckNo.charAt(i)!='/'){
-		    	
-				str +=truckNo.charAt(i);
-			}
-		}
-			
-				
-//		dividing string based on continuous sequence of integers or character.
-//		to increase readability
-		String truckNoUpdated="";
 
-//		iterate till last 4th index
-		for(int i=0;i<str.length()-4;i++){
-		
-			truckNoUpdated+=str.charAt(i);
-		
-			int l1 = Integer.valueOf(str.charAt(i));
-			int l2 = Integer.valueOf(str.charAt(i+1));
-//			compares present and next character having same type or not, if different type, add's extra space
-//			Example: converts "AP32EEE4444" to "AP 32 EEE" i.e all integers and characters separate
-			if((l1>=48&&l1<=57&&(l2<48||l2>57))||(l2>=48&&l2<=57&&(l1<48||l1>57))){
-				
-					truckNoUpdated+=' ';
-			}
-		}
-		
+		String truckNoUpdated = generateTruckNumber(truckNo);
 
-		if(truckNoUpdated.charAt(truckNoUpdated.length()-1)!=' ')
-		{
-			truckNoUpdated+=' ';
-		}
-		
-        //add's the remaining last 4digits of truckNumber
-		truckNoUpdated+=str.substring(str.length()-4,str.length());
+		// handling already existed same TruckNo and TransporterId case
+		List<TruckData> check = truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(), truckNoUpdated);
 
-		
-        //handling already existed same TruckNo and TransporterId case
-		List<TruckData> check = truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(),truckNoUpdated);
-		
-		if(check.size()!=0)
-		{
-			truckCreateResponse.setStatus(truckConstants.existingTruckAndTransporter);
+		if (check.size() != 0) {
+			truckCreateResponse.setStatus(truckConstants.EXISTING_TRUCK_AND_TRANSPORTER);
 			return truckCreateResponse;
 		}
-		
-			
-		
-		
-		
-//		sending data to TruckData Table.
-		TruckData data = new TruckData();
-		
-		String truckId_temp = "truck:"+UUID.randomUUID().toString();
-		data.setTruckId(truckId_temp);
-		data.setTransporterId(truckRequest.getTransporterId());
-		data.setTruckNo(truckNoUpdated);
-		
-		if(truckRequest.getImei()!=null) {
-			data.setImei(truckRequest.getImei());
+
+//		sending truckData to TruckData Table.
+		TruckData truckData = new TruckData();
+
+		String truckId_temp = "truck:" + UUID.randomUUID().toString();
+		truckData.setTruckId(truckId_temp);
+		truckData.setTransporterId(truckRequest.getTransporterId());
+		truckData.setTruckNo(truckNoUpdated);
+
+		if (truckRequest.getImei() != null) {
+			truckData.setImei(truckRequest.getImei());
 		}
-		if(truckRequest.getPassingWeight()!=0) {
-			data.setPassingWeight(truckRequest.getPassingWeight());
+		if (truckRequest.getPassingWeight() != 0) {
+			truckData.setPassingWeight(truckRequest.getPassingWeight());
 		}
-		if(truckRequest.getDriverId()!=null) {
-			data.setDriverId(truckRequest.getDriverId());
+		if (truckRequest.getDriverId() != null) {
+			truckData.setDriverId(truckRequest.getDriverId());
 		}
-		
-		if(truckRequest.getTruckType()!=null) {
-			
-			if("LCV".equals(String.valueOf(truckRequest.getTruckType())))
-				data.setTruckType(TruckType.LCV);
-			else if("OPEN_BODY_TRUCK".equals(String.valueOf(truckRequest.getTruckType())))
-				data.setTruckType(TruckType.OPEN_BODY_TRUCK);
-			else if("CLOSED_CONTAINER".equals(String.valueOf(truckRequest.getTruckType())))
-				data.setTruckType(TruckType.CLOSED_CONTAINER);
-			else if("TRAILER".equals(String.valueOf(truckRequest.getTruckType())))
-				data.setTruckType(TruckType.TRAILER);
-			else if("TANKER".equals(String.valueOf(truckRequest.getTruckType())))
-				data.setTruckType(TruckType.TANKER);
-			else if("TIPPER".equals(String.valueOf(truckRequest.getTruckType())))
-				data.setTruckType(TruckType.TIPPER);
-			else	
-				data.setTruckType(TruckType.OTHERS);
-			
-		}
-		
-		if(truckRequest.getTyres()!=null) {
-			if("SIX_TYRES".equals(String.valueOf(truckRequest.getTyres())))
-				data.setTyres(Tyres.SIX_TYRES);
-			
-			else if("EIGHT_TYRES".equals(String.valueOf(truckRequest.getTyres())))
-				data.setTyres(Tyres.EIGHT_TYRES);
+
+		if (truckRequest.getTruckType() != null) {
+
+			if ("LCV".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.LCV);
+			else if ("OPEN_BODY_TRUCK".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.OPEN_BODY_TRUCK);
+			else if ("CLOSED_CONTAINER".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.CLOSED_CONTAINER);
+			else if ("TRAILER".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.TRAILER);
+			else if ("TANKER".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.TANKER);
+			else if ("TIPPER".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.TIPPER);
 			else
-				data.setTyres(Tyres.OTHERS);
-			
-			
+				truckData.setTruckType(TruckType.OTHERS);
+
 		}
-		
-		
-		if(truckRequest.getTruckApproved()!=null) {
-			data.setTruckApproved(truckRequest.getTruckApproved());
+
+		if (truckRequest.getTyres() != null) {
+			if ("SIX_TYRES".equals(String.valueOf(truckRequest.getTyres())))
+				truckData.setTyres(Tyres.SIX_TYRES);
+
+			else if ("EIGHT_TYRES".equals(String.valueOf(truckRequest.getTyres())))
+				truckData.setTyres(Tyres.EIGHT_TYRES);
+			else
+				truckData.setTyres(Tyres.OTHERS);
+
 		}
-		
-		truckDao.save(data);
-		
-			
-//		sending data to truckId - TransporterId table.
+
+		if (truckRequest.getTruckApproved() != null) {
+			truckData.setTruckApproved(truckRequest.getTruckApproved());
+		}
+
+		truckDao.save(truckData);
+
+//		sending truckData to truckId - TransporterId table.
 		TruckTransporterData sData = new TruckTransporterData();
 		sData.setTransporterId(truckRequest.getTransporterId());
 		sData.setTruckId(truckId_temp);
-		
+
 		sTruckDao.save(sData);
-			
+
 //		Sending success postResponse
-		truckCreateResponse.setStatus(truckConstants.success);
+		truckCreateResponse.setStatus(truckConstants.ADD_SUCCESS);
 		truckCreateResponse.setTransporterId(truckRequest.getTransporterId());
 		truckCreateResponse.setTruckId(truckId_temp);
 		return truckCreateResponse;
-	
-		
-	}
-	
-	
 
-	public TruckUpdateResponse updateData(String id,TruckUpdateRequest truckUpdateRequest) {
+	}
+
+	public TruckUpdateResponse updateData(String id, TruckUpdateRequest truckUpdateRequest) {
 
 		TruckUpdateResponse response = new TruckUpdateResponse();
-		TruckData td=new TruckData();
+		TruckData truckData = new TruckData();
 
-		
-		Optional<TruckData> d = Optional.ofNullable(truckDao.findByTruckId(id));
-		if(d.isPresent()) {
-			td = d.get();
-		}
-		else {
-			 response.setStatus(truckConstants.AccountNotFoundError);
+		Optional<TruckData> findTruck = Optional.ofNullable(truckDao.findByTruckId(id));
+		if (findTruck.isPresent()) {
+			truckData = findTruck.get();
+		} else {
+			response.setStatus(truckConstants.ACCOUNT_NOT_FOUND_ERROR);
 			return response;
 		}
-		
-		
-		
-		
-		if(truckUpdateRequest.getImei()!=null)
-		{
-			td.setImei(truckUpdateRequest.getImei());
+
+		if (truckUpdateRequest.getImei() != null) {
+			truckData.setImei(truckUpdateRequest.getImei());
 		}
-		
-		if(truckUpdateRequest.getPassingWeight()!=0)
-		{
-			td.setPassingWeight(truckUpdateRequest.getPassingWeight());
-			}
-		
-		if(truckUpdateRequest.getDriverId()!=null)
-		{
-			td.setDriverId(truckUpdateRequest.getDriverId());
-			}
-		
-		if(truckUpdateRequest.getTruckApproved()!=null)
-		{
-			td.setTruckApproved(truckUpdateRequest.getTruckApproved());
-			
+
+		if (truckUpdateRequest.getPassingWeight() != 0) {
+			truckData.setPassingWeight(truckUpdateRequest.getPassingWeight());
 		}
-		
-		if(truckUpdateRequest.getTruckType()!=null) {
-			
-			if("LCV".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				td.setTruckType(TruckType.LCV);
-			else if("OPEN_BODY_TRUCK".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				td.setTruckType(TruckType.OPEN_BODY_TRUCK);
-			else if("CLOSED_CONTAINER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				td.setTruckType(TruckType.CLOSED_CONTAINER);
-			else if("TRAILER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				td.setTruckType(TruckType.TRAILER);
-			else if("TANKER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				td.setTruckType(TruckType.TANKER);
-			else if("TIPPER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				td.setTruckType(TruckType.TIPPER);
-			else	
-				td.setTruckType(TruckType.OTHERS);
-				
+
+		if (truckUpdateRequest.getDriverId() != null) {
+			truckData.setDriverId(truckUpdateRequest.getDriverId());
 		}
-		
-		if(truckUpdateRequest.getTyres()!=null) {
-			if("SIX_TYRES".equals(String.valueOf(truckUpdateRequest.getTyres())))
-				td.setTyres(Tyres.SIX_TYRES);
-			else if("EIGHT_TYRES".equals(String.valueOf(truckUpdateRequest.getTyres())))
-				td.setTyres(Tyres.EIGHT_TYRES);
-			else	
-				td.setTyres(Tyres.OTHERS);
-			
-			
+
+		if (truckUpdateRequest.getTruckApproved() != null) {
+			truckData.setTruckApproved(truckUpdateRequest.getTruckApproved());
+
 		}
-		
-	
-		
-		truckDao.save(td);
-		response.setStatus(truckConstants.updateSuccess);
-		response.setTransporterId(td.getTransporterId());
+
+		if (truckUpdateRequest.getTruckType() != null) {
+
+			if ("LCV".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.LCV);
+			else if ("OPEN_BODY_TRUCK".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.OPEN_BODY_TRUCK);
+			else if ("CLOSED_CONTAINER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.CLOSED_CONTAINER);
+			else if ("TRAILER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.TRAILER);
+			else if ("TANKER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.TANKER);
+			else if ("TIPPER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.TIPPER);
+			else
+				truckData.setTruckType(TruckType.OTHERS);
+
+		}
+
+		if (truckUpdateRequest.getTyres() != null) {
+			if ("SIX_TYRES".equals(String.valueOf(truckUpdateRequest.getTyres())))
+				truckData.setTyres(Tyres.SIX_TYRES);
+			else if ("EIGHT_TYRES".equals(String.valueOf(truckUpdateRequest.getTyres())))
+				truckData.setTyres(Tyres.EIGHT_TYRES);
+			else
+				truckData.setTyres(Tyres.OTHERS);
+
+		}
+
+		truckDao.save(truckData);
+		response.setStatus(truckConstants.UPDATE_SUCCESS);
+		response.setTransporterId(truckData.getTransporterId());
 		response.setTruckId(id);
 		return response;
 	}
 
-	
-//	delete a data
+//	delete a truckData
 	public TruckDeleteResponse deleteData(String id) {
 
 		TruckDeleteResponse truckDeleteResponse = new TruckDeleteResponse();
-		
-		TruckData temp = truckDao.findByTruckId(id);
-		TruckTransporterData temp2 = sTruckDao.findByTruckId(id);
-		
-		
-		if(Objects.isNull(temp) || Objects.isNull(temp2)) {
-			truckDeleteResponse.setStatus(truckConstants.AccountNotFoundError);
-			return truckDeleteResponse;	
+
+		TruckData findTruckData = truckDao.findByTruckId(id);
+		TruckTransporterData findTruckTransporterData = sTruckDao.findByTruckId(id);
+
+		if (Objects.isNull(findTruckData) || Objects.isNull(findTruckTransporterData)) {
+			truckDeleteResponse.setStatus(truckConstants.ACCOUNT_NOT_FOUND_ERROR);
+			return truckDeleteResponse;
+		} else {
+			truckDao.delete(findTruckData);
+			sTruckDao.delete(findTruckTransporterData);
+
+			truckDeleteResponse.setStatus(truckConstants.DELETE_SUCCESS);
+			return truckDeleteResponse;
 		}
-		else {
-			truckDao.delete(temp);
-			sTruckDao.delete(temp2);
-			truckDeleteResponse.setStatus(truckConstants.deleteSuccess);
-			return truckDeleteResponse;	
-		}
-			
-		
+
 	}
 
-	
-//	get truck data by the truck id
+	// get truck truckData by the truck id
 	@Override
 	public TruckData getDataById(String Id) {
-//		TODO Auto-generated method stub
-		Optional<TruckData> d = Optional.ofNullable(truckDao.findByTruckId(Id));
-		if(d.isEmpty()) {
+		Optional<TruckData> findTruck = Optional.ofNullable(truckDao.findByTruckId(Id));
+		if (findTruck.isEmpty()) {
 			return null;
 		}
-		return d.get();	
- 
+		return findTruck.get();
+
 	}
 
-	
 //	get pageable
-	public List<TruckData> getTruckDataPagableService(Integer pageNo,String transporterId,Boolean truckApproved,String truckId){
-		
-		if(pageNo==null)
-			pageNo=0;
+	public List<TruckData> getTruckDataPagableService(Integer pageNo, String transporterId, Boolean truckApproved,
+			String truckId) {
 
-		
-		Pageable p = PageRequest.of(pageNo,2);
-		
-		if(truckId!=null) {
-			return truckDao.findByTruckId(truckId,p);
+		if (pageNo == null)
+			pageNo = 0;
+
+		Pageable currentPage = PageRequest.of(pageNo, 2);
+
+		if (truckId != null) {
+			return truckDao.findByTruckId(truckId, currentPage);
 		}
-		
+
 		else {
-			if(transporterId!=null && truckApproved==null) {
-				return truckDao.findByTransporterId(transporterId,p);
+			if (transporterId != null && truckApproved == null) {
+				return truckDao.findByTransporterId(transporterId, currentPage);
 			}
 
-			else if(transporterId==null && truckApproved!=null ) {
-				return truckDao.findByTruckApproved(truckApproved,p);
+			else if (transporterId == null && truckApproved != null) {
+				return truckDao.findByTruckApproved(truckApproved, currentPage);
 			}
-		
-			else if (transporterId!=null && truckApproved!=null ) {
-				return truckDao.findByTransporterIdAndTruckApproved(transporterId,truckApproved,p);
+
+			else if (transporterId != null && truckApproved != null) {
+				return truckDao.findByTransporterIdAndTruckApproved(transporterId, truckApproved, currentPage);
 			}
-		
+
 		}
 		return truckDao.findAll();
 	}
-	
-	
+
+	public String generateTruckNumber(String truckNo) {
+
+		// removing all unnecessary sign's or spaces.
+		// Example: converts "AP-31-RT-4555" to "AP31RT4555" i.e removes all extra
+		// spaces and character
+		String str = "";
+
+		// dividing string based on continuous sequence of integers or character.
+		// to increase readability
+		String truckNoUpdated = "";
+
+		for (int i = 0; i < truckNo.length(); i++) {
+
+			if (truckNo.charAt(i) != ' ' && truckNo.charAt(i) != '-' && truckNo.charAt(i) != '/') {
+
+				str += truckNo.charAt(i);
+			}
+		}
+
+		// iterate till last 4th index
+		for (int i = 0; i < str.length() - 4; i++) {
+
+			truckNoUpdated += str.charAt(i);
+
+			int l1 = Integer.valueOf(str.charAt(i));
+			int l2 = Integer.valueOf(str.charAt(i + 1));
+
+			// compares present and next character having same type or not, if different
+			// type, add's extra space
+			// Example: converts "AP32EEE4444" to "AP 32 EEE" i.e all integers and
+			// characters separate
+			if ((l1 >= 48 && l1 <= 57 && (l2 < 48 || l2 > 57)) || (l2 >= 48 && l2 <= 57 && (l1 < 48 || l1 > 57))) {
+
+				truckNoUpdated += ' ';
+			}
+		}
+
+		if (truckNoUpdated.charAt(truckNoUpdated.length() - 1) != ' ') {
+			truckNoUpdated += ' ';
+		}
+
+		// add's the remaining last 4digits of truckNumber
+		truckNoUpdated += str.substring(str.length() - 4, str.length());
+
+		return truckNoUpdated;
+	}
+
 }
