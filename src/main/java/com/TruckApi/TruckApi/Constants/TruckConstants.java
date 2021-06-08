@@ -13,7 +13,7 @@ public class TruckConstants {
 	public static final String UPDATE_TRUCK_ID_ERROR = "Failed: Cannot update Truck Id";
 	
 	//truck data 
-	public static final String URI = "/truck/";
+	public static final String URI = "/truck";
 	public static final String TRUCK_ID_URI = "/truck/truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";
 	public static final String TRUCK_ID = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";
 	public static final String TRANSPORTER_ID="transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67";

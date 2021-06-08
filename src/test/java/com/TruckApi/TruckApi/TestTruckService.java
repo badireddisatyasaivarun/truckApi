@@ -61,7 +61,8 @@ public class TestTruckService {
 
 		// When Everythimg Is Fine
 		TruckRequest truckRequest = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
-				"AP 32 AD 2220", true, null, 0, null, null, null);
+				"AP 32 AD 2220", true, "alpha", 50,"driver:0de885e0-5f43-4c68-8dde-b25464747865",
+				TruckRequest.TruckType.OPEN_BODY_TRUCK,TruckRequest.Tyres.EIGHT_TYRES);
 
 		List<TruckData> listTruckData = createTruckData();
 

@@ -119,9 +119,9 @@ public class TruckServiceImpl implements TruckService {
 
 		}
 
-		if (truckRequest.getTruckApproved() != null) {
-			truckData.setTruckApproved(truckRequest.getTruckApproved());
-		}
+		
+			truckData.setTruckApproved(false);
+		
 
 		truckDao.save(truckData);
 
