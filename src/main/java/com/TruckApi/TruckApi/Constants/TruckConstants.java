@@ -11,6 +11,8 @@ public class TruckConstants {
 	public static final String ACCOUNT_NOT_FOUND_ERROR = "Failed: Account not found";
 	public static final String DELETE_SUCCESS = "Deleted Succcessfully";
 	public static final String UPDATE_TRUCK_ID_ERROR = "Failed: Cannot update Truck Id";
+	public static final String UNVALID_NUMBER_OF_TYRES_ERROR = "Failed: invalid number of tyres";
+	public static final String UNVALID_TRUCK_TYPE_ERROR = "Failed: invalid number of tyres";
 	
 	//truck data 
 	public static final String URI = "/truck";

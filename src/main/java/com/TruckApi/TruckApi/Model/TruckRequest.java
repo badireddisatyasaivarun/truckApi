@@ -1,12 +1,12 @@
 package com.TruckApi.TruckApi.Model;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import com.TruckApi.TruckApi.entities.TruckData.TruckType;
-import com.TruckApi.TruckApi.entities.TruckData.Tyres;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,29 +24,13 @@ public class TruckRequest {
 	private String imei;
 	private  long passingWeight;
 	private String driverId;
-	
+	private Integer tyres;
 
 	@Enumerated(EnumType.STRING)
 	private TruckType truckType;
 	
-
-	@Enumerated(EnumType.STRING)
-	private Tyres tyres;
-	
 	public enum TruckType {
-	    LCV,
-	    OPEN_BODY_TRUCK,
-	    CLOSED_CONTAINER,
-	    TRAILER,
-	    TANKER,
-	    TIPPER,
-	    OTHERS
-	  }
-	
-	public enum Tyres{
-		SIX_TYRES,
-		EIGHT_TYRES,
-		OTHERS
+		OPEN_HALF_BODY, OPEN_FULL_BODY, FLATBED, HALF_BODY_TRAILER, FULL_BODY_TRAILER, STANDARD_CONTAINER, HIGH_CUBE_CONTAINER;
 	}
-	
+
 }
