@@ -8,6 +8,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,10 +30,10 @@ public @Data class TruckData {
 	private String driverId;
 
 	@Enumerated(EnumType.STRING)
-	private TruckType truckType;
+	public TruckType truckType;
 
 	@Enumerated(EnumType.STRING)
-	private Tyres tyres;
+	public Tyres tyres;
 
 	public enum TruckType {
 		LCV, OPEN_BODY_TRUCK, CLOSED_CONTAINER, TRAILER, TANKER, TIPPER, OTHERS
