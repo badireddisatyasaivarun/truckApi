@@ -23,7 +23,6 @@ import com.TruckApi.TruckApi.Model.TruckUpdateRequest;
 import com.TruckApi.TruckApi.Model.TruckUpdateResponse;
 import com.TruckApi.TruckApi.entities.TruckData;
 import com.TruckApi.TruckApi.entities.TruckData.TruckType;
-import com.TruckApi.TruckApi.entities.TruckData.Tyres;
 
 import com.TruckApi.TruckApi.entities.TruckTransporterData;
 
@@ -78,7 +77,6 @@ public class TruckServiceImpl implements TruckService {
 		truckData.setTruckId(truckId_temp);
 		truckData.setTransporterId(truckRequest.getTransporterId());
 		truckData.setTruckNo(truckNoUpdated);
-
 		if (truckRequest.getImei() != null) {
 			truckData.setImei(truckRequest.getImei());
 		}
@@ -91,36 +89,37 @@ public class TruckServiceImpl implements TruckService {
 
 		if (truckRequest.getTruckType() != null) {
 
-			if ("LCV".equals(String.valueOf(truckRequest.getTruckType())))
-				truckData.setTruckType(TruckType.LCV);
-			else if ("OPEN_BODY_TRUCK".equals(String.valueOf(truckRequest.getTruckType())))
-				truckData.setTruckType(TruckType.OPEN_BODY_TRUCK);
-			else if ("CLOSED_CONTAINER".equals(String.valueOf(truckRequest.getTruckType())))
-				truckData.setTruckType(TruckType.CLOSED_CONTAINER);
-			else if ("TRAILER".equals(String.valueOf(truckRequest.getTruckType())))
-				truckData.setTruckType(TruckType.TRAILER);
-			else if ("TANKER".equals(String.valueOf(truckRequest.getTruckType())))
-				truckData.setTruckType(TruckType.TANKER);
-			else if ("TIPPER".equals(String.valueOf(truckRequest.getTruckType())))
-				truckData.setTruckType(TruckType.TIPPER);
+			if ("OPEN_HALF_BODY".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.OPEN_HALF_BODY);
+			else if ("OPEN_FULL_BODY".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.OPEN_FULL_BODY);
+			else if ("FLATBED".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.FLATBED);
+			else if ("HALF_BODY_TRAILER".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.HALF_BODY_TRAILER);
+			else if ("FULL_BODY_TRAILER".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.FULL_BODY_TRAILER);
+			else if ("STANDARD_CONTAINER".equals(String.valueOf(truckRequest.getTruckType())))
+				truckData.setTruckType(TruckType.STANDARD_CONTAINER);
 			else
-				truckData.setTruckType(TruckType.OTHERS);
+				truckData.setTruckType(TruckType.HIGH_CUBE_CONTAINER);
 
 		}
 
-		if (truckRequest.getTyres() != null) {
-			if ("SIX_TYRES".equals(String.valueOf(truckRequest.getTyres())))
-				truckData.setTyres(Tyres.SIX_TYRES);
-
-			else if ("EIGHT_TYRES".equals(String.valueOf(truckRequest.getTyres())))
-				truckData.setTyres(Tyres.EIGHT_TYRES);
+		if (truckRequest.getTyres()!=null) {
+			if(truckRequest.getTyres()>=4 && truckRequest.getTyres()<=26 && truckRequest.getTyres()%2==0)
+			{
+				truckData.setTyres(truckRequest.getTyres());
+			}
 			else
-				truckData.setTyres(Tyres.OTHERS);
-
+			{
+				truckCreateResponse.setStatus(truckConstants.UNVALID_NUMBER_OF_TYRES_ERROR);
+				return truckCreateResponse;
+			}
 		}
-
+		else System.out.println("no: "  + truckRequest.getTyres());
 		
-			truckData.setTruckApproved(false);
+		truckData.setTruckApproved(false);
 		
 
 		truckDao.save(truckData);
@@ -137,7 +136,8 @@ public class TruckServiceImpl implements TruckService {
 		truckCreateResponse.setTransporterId(truckRequest.getTransporterId());
 		truckCreateResponse.setTruckId(truckId_temp);
 		return truckCreateResponse;
-
+		
+		
 	}
 
 	public TruckUpdateResponse updateData(String id, TruckUpdateRequest truckUpdateRequest) {
@@ -171,32 +171,36 @@ public class TruckServiceImpl implements TruckService {
 		}
 
 		if (truckUpdateRequest.getTruckType() != null) {
-
-			if ("LCV".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				truckData.setTruckType(TruckType.LCV);
-			else if ("OPEN_BODY_TRUCK".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				truckData.setTruckType(TruckType.OPEN_BODY_TRUCK);
-			else if ("CLOSED_CONTAINER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				truckData.setTruckType(TruckType.CLOSED_CONTAINER);
-			else if ("TRAILER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				truckData.setTruckType(TruckType.TRAILER);
-			else if ("TANKER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				truckData.setTruckType(TruckType.TANKER);
-			else if ("TIPPER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
-				truckData.setTruckType(TruckType.TIPPER);
+			 if ("OPEN_HALF_BODY".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.OPEN_HALF_BODY);
+			else if ("OPEN_FULL_BODY".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.OPEN_FULL_BODY);
+			else if ("FLATBED".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.FLATBED);
+			else if ("HALF_BODY_TRAILER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.HALF_BODY_TRAILER);
+			else if ("FULL_BODY_TRAILER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.FULL_BODY_TRAILER);
+			else if ("STANDARD_CONTAINER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.STANDARD_CONTAINER);
+			else if ("HIGH_CUBE_CONTAINER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+				truckData.setTruckType(TruckType.HIGH_CUBE_CONTAINER);
 			else
-				truckData.setTruckType(TruckType.OTHERS);
-
+			{
+				response.setStatus(truckConstants.UNVALID_TRUCK_TYPE_ERROR);
+				return response;
+			}
 		}
-
-		if (truckUpdateRequest.getTyres() != null) {
-			if ("SIX_TYRES".equals(String.valueOf(truckUpdateRequest.getTyres())))
-				truckData.setTyres(Tyres.SIX_TYRES);
-			else if ("EIGHT_TYRES".equals(String.valueOf(truckUpdateRequest.getTyres())))
-				truckData.setTyres(Tyres.EIGHT_TYRES);
-			else
-				truckData.setTyres(Tyres.OTHERS);
-
+		if (truckUpdateRequest.getTyres()!=null ) {
+			if(truckUpdateRequest.getTyres()>=4 && truckUpdateRequest.getTyres()<=26 && truckUpdateRequest.getTyres()%2==0)
+			{
+				truckData.setTyres(truckUpdateRequest.getTyres());
+			}
+			else 
+			{
+				response.setStatus(truckConstants.UNVALID_NUMBER_OF_TYRES_ERROR);
+				return response;
+			}
 		}
 
 		truckDao.save(truckData);
