@@ -8,6 +8,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +31,10 @@ public @Data class TruckData {
 	private Integer tyres;
 	
 	@Enumerated(EnumType.STRING)
-	private TruckType truckType;
+	public TruckType truckType;
+
+	@Enumerated(EnumType.STRING)
+	public Tyres tyres;
 
 	public enum TruckType {
 		OPEN_HALF_BODY, OPEN_FULL_BODY, FLATBED, HALF_BODY_TRAILER, FULL_BODY_TRAILER, STANDARD_CONTAINER, HIGH_CUBE_CONTAINER;

@@ -363,5 +363,5 @@ public class TestTruckService {
 						null, null, null));
 
 		return truckList;
-	}
+}
 }
