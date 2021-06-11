@@ -3,6 +3,8 @@ package com.TruckApi.TruckApi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +12,7 @@ import com.TruckApi.TruckApi.Constants.TruckConstants;
 import com.TruckApi.TruckApi.Model.TruckCreateResponse;
 import com.TruckApi.TruckApi.Model.TruckRequest;
 import com.TruckApi.TruckApi.Model.TruckUpdateRequest;
+import com.TruckApi.TruckApi.entities.TruckData;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,29 +23,126 @@ import io.restassured.response.ValidatableResponse;
 
 public class ApiTestRestAssured {
 
-	
-	 @BeforeAll
-	    public static void setup() {
-	        RestAssured.baseURI = TruckConstants.BASE_URI;
-	        
-	 }
-	 
-	@Test
-	public void getTruckDataWithId() throws Exception {
+	private static String truckId1;
+	private static String truckId2;
 
-		Response response = RestAssured.given().header("", "").header("accept", "application/json")
-				.header("Content-Type", "application/json").get("/truck:98bc8bb5-448d-4fc6-9963-b604f8a1ddd7").then().extract().response();
-		
+	@BeforeAll
+	public static void setup() throws Exception {
+		RestAssured.baseURI = TruckConstants.BASE_URI;
+
+		TruckRequest truckRequest = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
+				"AA 00 AA 1111", false, "alpha", 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865",
+				TruckRequest.TruckType.OPEN_BODY_TRUCK, TruckRequest.Tyres.EIGHT_TYRES);
+
+		String inputJson = mapToJson(truckRequest);
+
+		Response response = RestAssured.given().header("", "").body(inputJson).header("accept", "application/json")
+				.header("Content-Type", "application/json").post().then().extract().response();
+
+		TruckRequest truckRequest1 = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
+				"AB 00 AA 1111", false, "alpha", 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865",
+				TruckRequest.TruckType.OPEN_BODY_TRUCK, TruckRequest.Tyres.EIGHT_TYRES);
+
+		String inputJson1 = mapToJson(truckRequest1);
+
+		Response response1 = RestAssured.given().header("", "").body(inputJson1).header("accept", "application/json")
+				.header("Content-Type", "application/json").post().then().extract().response();
+
 		assertEquals(200, response.statusCode());
-		assertEquals("ZP 90 XZ 2540", response.jsonPath().getString("truckNo"));
-		
-		
+		assertEquals(TruckConstants.ADD_SUCCESS, response.jsonPath().getString("status"));
+		truckId1 = response.jsonPath().getString("truckId");
+
+		assertEquals(200, response1.statusCode());
+		assertEquals(TruckConstants.ADD_SUCCESS, response1.jsonPath().getString("status"));
+		truckId2 = response1.jsonPath().getString("truckId");
+
 	}
 
 	@Test
+	
+	public void addDataFailed_truckNoAlreadyExisted() throws Exception {
+
+		TruckRequest truckRequest = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
+				"AA 00 AA 1111", true, "alpha", 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865",
+				TruckRequest.TruckType.OPEN_BODY_TRUCK, TruckRequest.Tyres.EIGHT_TYRES);
+
+		String inputJson = mapToJson(truckRequest);
+
+		Response response = RestAssured.given().header("", "").body(inputJson).header("accept", "application/json")
+				.header("Content-Type", "application/json").post().then().extract().response();
+
+		assertEquals(200, response.statusCode());
+		assertEquals(TruckConstants.EXISTING_TRUCK_AND_TRANSPORTER, response.jsonPath().getString("status"));
+
+	}
+
+	@Test
+	public void addDataFailed_invalidTruckNo_null() throws Exception {
+
+		TruckRequest truckRequest = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69", null, true,
+				"alpha", 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865", TruckRequest.TruckType.OPEN_BODY_TRUCK,
+				TruckRequest.Tyres.EIGHT_TYRES);
+
+		String inputJson = mapToJson(truckRequest);
+
+		Response response = RestAssured.given().header("", "").body(inputJson).header("accept", "application/json")
+				.header("Content-Type", "application/json").post().then().extract().response();
+
+		assertEquals(200, response.statusCode());
+		assertEquals(TruckConstants.TRUCK_NO_IS_INVALID, response.jsonPath().getString("status"));
+
+	}
+
+	@Test
+	public void addDataFailed_invalidTruckNo_notNull1() throws Exception {
+
+		TruckRequest truckRequest = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
+				"Z 00 AA 1111", true, "alpha", 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865",
+				TruckRequest.TruckType.OPEN_BODY_TRUCK, TruckRequest.Tyres.EIGHT_TYRES);
+
+		String inputJson = mapToJson(truckRequest);
+
+		Response response = RestAssured.given().header("", "").body(inputJson).header("accept", "application/json")
+				.header("Content-Type", "application/json").post().then().extract().response();
+
+		assertEquals(200, response.statusCode());
+		assertEquals(TruckConstants.TRUCK_NO_IS_INVALID, response.jsonPath().getString("status"));
+
+	}
+
+	@Test
+	public void addDataFailed_invalidTruckNo_notNull2() throws Exception {
+
+		TruckRequest truckRequest = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
+				"AB 00 AA 111", true, "alpha", 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865",
+				TruckRequest.TruckType.OPEN_BODY_TRUCK, TruckRequest.Tyres.EIGHT_TYRES);
+
+		String inputJson = mapToJson(truckRequest);
+
+		Response response = RestAssured.given().header("", "").body(inputJson).header("accept", "application/json")
+				.header("Content-Type", "application/json").post().then().extract().response();
+
+		assertEquals(200, response.statusCode());
+		assertEquals(TruckConstants.TRUCK_NO_IS_INVALID, response.jsonPath().getString("status"));
+
+	}
+
+	@Test
+	
+	public void getTruckDataWithId() throws Exception {
+
+		Response response = RestAssured.given().header("", "").header("accept", "application/json")
+				.header("Content-Type", "application/json").get("/" + truckId1).then().extract().response();
+
+		assertEquals(200, response.statusCode());
+		assertEquals("AA 00 AA 1111", response.jsonPath().getString("truckNo"));
+
+	}
+
+	@Test
+	
 	public void getTruckDataWithParam() throws Exception {
 
-		
 		Response response = RestAssured.given().param("truckApproved", false).header("accept", "application/json")
 				.header("Content-Type", "application/json").get().then().extract().response();
 
@@ -52,35 +152,15 @@ public class ApiTestRestAssured {
 	}
 
 	@Test
-	public void addData() throws Exception {
-
-		TruckRequest truckRequest = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
-				"IP 90 XZ 9540", true, "alpha", 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865",
-				TruckRequest.TruckType.OPEN_BODY_TRUCK, TruckRequest.Tyres.EIGHT_TYRES);
-
-		String inputJson = mapToJson(truckRequest);
-
-		
-		Response response = RestAssured.given().header("", "").body(inputJson).header("accept", "application/json")
-				.header("Content-Type", "application/json").post().then().extract().response();
-
-		assertEquals(200, response.statusCode());
-		assertEquals(TruckConstants.ADD_SUCCESS, response.jsonPath().getString("status"));
-
-	}
-
-	@Test
+	
 	public void updateData() throws Exception {
 
-		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest("gamma", false, 1000, "driver:afdge", null,
-				null);
+		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest("gamma", true, 1000, "driver:afdge", null, null);
 
 		String inputJson = mapToJson(truckUpdateRequest);
 
-		
 		Response response = RestAssured.given().header("", "").body(inputJson).header("accept", "application/json")
-				.header("Content-Type", "application/json").put("/truck:4bf0bdc8-bc66-41d1-bccb-e7c70b78e2df").then()
-				.extract().response();
+				.header("Content-Type", "application/json").put("/" + truckId1).then().extract().response();
 
 		assertEquals(200, response.statusCode());
 		assertEquals(TruckConstants.UPDATE_SUCCESS, response.jsonPath().getString("status"));
@@ -88,14 +168,18 @@ public class ApiTestRestAssured {
 	}
 
 	@Test
+	
 	public void deleteData() throws Exception {
 
-		
-		Response response = RestAssured.given().header("", "").delete("/truck:4bf0bdc8-bc66-41d1-bccb-e7c70b78e2df")
-				.then().extract().response();
+		Response response = RestAssured.given().header("", "").delete("/" + truckId1).then().extract().response();
+
+		Response response1 = RestAssured.given().header("", "").delete("/" + truckId2).then().extract().response();
 
 		assertEquals(200, response.statusCode());
 		assertEquals(TruckConstants.DELETE_SUCCESS, response.jsonPath().getString("status"));
+
+		assertEquals(200, response1.statusCode());
+		assertEquals(TruckConstants.DELETE_SUCCESS, response1.jsonPath().getString("status"));
 
 	}
 
