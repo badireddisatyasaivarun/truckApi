@@ -1,16 +1,5 @@
 package com.TruckApi.TruckApi.Model;
 
-<<<<<<< HEAD
-import java.util.UUID;
-
-import lombok.Data;
-
-public @Data class TruckRequest {
-
-	private String transporterId;
-	private String truckNo;
-	
-=======
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -44,5 +33,4 @@ public class TruckRequest {
 		OPEN_HALF_BODY, OPEN_FULL_BODY, FLATBED, HALF_BODY_TRAILER, FULL_BODY_TRAILER, STANDARD_CONTAINER, HIGH_CUBE_CONTAINER;
 	}
 
->>>>>>> 8033c3454448edc3d4dbe82633cd7fcff8b066a6
 }

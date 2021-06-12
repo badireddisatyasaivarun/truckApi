@@ -2,14 +2,6 @@ package com.TruckApi.TruckApi.Model;
 
 import java.util.UUID;
 
-<<<<<<< HEAD
-import lombok.Data;
-
-public @Data class TruckUpdateRequest {
-	private String imei;
-	private Boolean approved;
-	private String truckNo;
-=======
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
@@ -37,5 +29,4 @@ public class TruckUpdateRequest {
 		OPEN_HALF_BODY, OPEN_FULL_BODY, FLATBED, HALF_BODY_TRAILER, FULL_BODY_TRAILER, STANDARD_CONTAINER, HIGH_CUBE_CONTAINER;
 	  }
 
->>>>>>> 8033c3454448edc3d4dbe82633cd7fcff8b066a6
 }

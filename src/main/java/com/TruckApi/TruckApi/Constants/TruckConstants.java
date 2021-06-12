@@ -2,14 +2,6 @@ package com.TruckApi.TruckApi.Constants;
 
 public class TruckConstants {
 
-<<<<<<< HEAD
-	public static String inCorrectTransporterId = "Failed: Enter Correct Transporter Id";
-	public static String truckNoIsInvalid = "Failed: Enter Correct Truck Number";
-	public static String existingTruckAndTransporter = "Failed: TruckNo is already Associated with TransporterId";
-	public static String upExistingTruckAndTransporter = "Failed: After Updating, Two elements Exists with same TruckNo and TransporterId";
-	public static String success = "Success";
-	public static String failure = "Failed";
-=======
 	//error and success messages
 	public static final String IN_CORRECT_TRANSPORTER_ID = "Failed: Enter Correct Transporter Id";
 	public static final String TRUCK_NO_IS_INVALID = "Failed: Enter Correct Truck Number";
@@ -36,6 +28,5 @@ public class TruckConstants {
 
 	
 	
->>>>>>> 8033c3454448edc3d4dbe82633cd7fcff8b066a6
 	
 }

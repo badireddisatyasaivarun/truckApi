@@ -3,11 +3,6 @@ package com.TruckApi.TruckApi.entities;
 import java.util.UUID;
 
 import javax.persistence.Entity;
-<<<<<<< HEAD
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-=======
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -15,7 +10,6 @@ import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
->>>>>>> 8033c3454448edc3d4dbe82633cd7fcff8b066a6
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,17 +19,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public @Data class TruckData {
 
-<<<<<<< HEAD
-	@Id	
-	private String truckId;
-	
-	private String transporterId;
-	private String truckNo;
-	private Boolean approved;
-	private String imei;
-}
-
-=======
 	@Id
 	private String truckId;
 
@@ -58,4 +41,3 @@ public @Data class TruckData {
 	}
 
 }
->>>>>>> 8033c3454448edc3d4dbe82633cd7fcff8b066a6
