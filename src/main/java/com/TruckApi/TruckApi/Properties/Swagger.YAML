@@ -11,7 +11,7 @@
             "url": "http://www.apache.org/licenses/LICENSE-2.0"
         }
     },
-    "host": "localhost:8080",
+    "host": "localhost:9090",
     "basePath": "/",
     "tags": [
         {
@@ -249,13 +249,6 @@
                 ],
                 "parameters": [
                     {
-                        "name": "approved",
-                        "in": "query",
-                        "description": "approved",
-                        "required": false,
-                        "type": "boolean"
-                    },
-                    {
                         "name": "pageNo",
                         "in": "query",
                         "description": "pageNo",
@@ -267,6 +260,20 @@
                         "name": "transporterId",
                         "in": "query",
                         "description": "transporterId",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "truckApproved",
+                        "in": "query",
+                        "description": "truckApproved",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "truckId",
+                        "in": "query",
+                        "description": "truckId",
                         "required": false,
                         "type": "string"
                     }
@@ -449,7 +456,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/TruckDeleteResponse"
+                        }
                     },
                     "204": {
                         "description": "No Content"
@@ -568,10 +578,13 @@
         "TruckCreateResponse": {
             "type": "object",
             "properties": {
-                "id": {
+                "status": {
                     "type": "string"
                 },
-                "status": {
+                "transporterId": {
+                    "type": "string"
+                },
+                "truckId": {
                     "type": "string"
                 }
             },
@@ -580,32 +593,93 @@
         "TruckData": {
             "type": "object",
             "properties": {
-                "approved": {
-                    "type": "boolean"
+                "driverId": {
+                    "type": "string"
                 },
                 "imei": {
                     "type": "string"
                 },
+                "passingWeight": {
+                    "type": "integer",
+                    "format": "int64"
+                },
                 "transporterId": {
                     "type": "string"
+                },
+                "truckApproved": {
+                    "type": "boolean"
                 },
                 "truckId": {
                     "type": "string"
                 },
                 "truckNo": {
                     "type": "string"
+                },
+                "truckType": {
+                    "type": "string",
+                    "enum": [
+                        "FLATBED",
+                        "FULL_BODY_TRAILER",
+                        "HALF_BODY_TRAILER",
+                        "HIGH_CUBE_CONTAINER",
+                        "OPEN_FULL_BODY",
+                        "OPEN_HALF_BODY",
+                        "STANDARD_CONTAINER"
+                    ]
+                },
+                "tyres": {
+                    "type": "integer",
+                    "format": "int32"
                 }
             },
             "title": "TruckData"
         },
+        "TruckDeleteResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            },
+            "title": "TruckDeleteResponse"
+        },
         "TruckRequest": {
             "type": "object",
             "properties": {
+                "driverId": {
+                    "type": "string"
+                },
+                "imei": {
+                    "type": "string"
+                },
+                "passingWeight": {
+                    "type": "integer",
+                    "format": "int64"
+                },
                 "transporterId": {
                     "type": "string"
                 },
+                "truckApproved": {
+                    "type": "boolean"
+                },
                 "truckNo": {
                     "type": "string"
+                },
+                "truckType": {
+                    "type": "string",
+                    "enum": [
+                        "FLATBED",
+                        "FULL_BODY_TRAILER",
+                        "HALF_BODY_TRAILER",
+                        "HIGH_CUBE_CONTAINER",
+                        "OPEN_FULL_BODY",
+                        "OPEN_HALF_BODY",
+                        "STANDARD_CONTAINER"
+                    ]
+                },
+                "tyres": {
+                    "type": "integer",
+                    "format": "int32"
                 }
             },
             "title": "TruckRequest"
@@ -613,14 +687,34 @@
         "TruckUpdateRequest": {
             "type": "object",
             "properties": {
-                "approved": {
-                    "type": "boolean"
+                "driverId": {
+                    "type": "string"
                 },
                 "imei": {
                     "type": "string"
                 },
-                "truckNo": {
-                    "type": "string"
+                "passingWeight": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "truckApproved": {
+                    "type": "boolean"
+                },
+                "truckType": {
+                    "type": "string",
+                    "enum": [
+                        "FLATBED",
+                        "FULL_BODY_TRAILER",
+                        "HALF_BODY_TRAILER",
+                        "HIGH_CUBE_CONTAINER",
+                        "OPEN_FULL_BODY",
+                        "OPEN_HALF_BODY",
+                        "STANDARD_CONTAINER"
+                    ]
+                },
+                "tyres": {
+                    "type": "integer",
+                    "format": "int32"
                 }
             },
             "title": "TruckUpdateRequest"
@@ -629,6 +723,12 @@
             "type": "object",
             "properties": {
                 "status": {
+                    "type": "string"
+                },
+                "transporterId": {
+                    "type": "string"
+                },
+                "truckId": {
                     "type": "string"
                 }
             },

@@ -249,7 +249,7 @@ public class TruckServiceImpl implements TruckService {
 		if (pageNo == null)
 			pageNo = 0;
 
-		Pageable currentPage = PageRequest.of(pageNo, 2);
+		Pageable currentPage = PageRequest.of(pageNo, 15);
 
 		if (truckId != null) {
 			return truckDao.findByTruckId(truckId, currentPage);
