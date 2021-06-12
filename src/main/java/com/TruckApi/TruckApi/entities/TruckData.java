@@ -33,9 +33,6 @@ public @Data class TruckData {
 	@Enumerated(EnumType.STRING)
 	public TruckType truckType;
 
-	@Enumerated(EnumType.STRING)
-	public Tyres tyres;
-
 	public enum TruckType {
 		OPEN_HALF_BODY, OPEN_FULL_BODY, FLATBED, HALF_BODY_TRAILER, FULL_BODY_TRAILER, STANDARD_CONTAINER, HIGH_CUBE_CONTAINER;
 	}

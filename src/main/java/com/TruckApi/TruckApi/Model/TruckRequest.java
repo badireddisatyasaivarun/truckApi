@@ -19,7 +19,6 @@ public class TruckRequest {
 
 	private String transporterId;
 	private String truckNo;
-	private Boolean truckApproved;
 
 	private String imei;
 	private  long passingWeight;
