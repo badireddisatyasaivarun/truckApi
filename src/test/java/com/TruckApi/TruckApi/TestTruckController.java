@@ -113,7 +113,7 @@ class TestTruckController {
 
 		TruckCreateResponse truckCreateResponse = new TruckCreateResponse(TruckConstants.ADD_SUCCESS,
 				"transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69", null, "AP 32 AD 2220",false, "alpha", (long) 50,
-				"driver:0de885e0-5f43-4c68-8dde-b25464747865", 16, (long) 60, TruckRequest.TruckType.OPEN_HALF_BODY);
+				"driver:0de885e0-5f43-4c68-8dde-b25464747865", 16, (long) 60, TruckData.TruckType.OPEN_HALF_BODY);
 
 		when(truckService.addData(Mockito.any(TruckRequest.class))).thenReturn(truckCreateResponse);
 

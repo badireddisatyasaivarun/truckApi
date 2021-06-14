@@ -5,8 +5,7 @@ import java.util.UUID;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import com.TruckApi.TruckApi.Model.TruckRequest.TruckType;
-//import com.TruckApi.TruckApi.Model.TruckRequest.Tyres;
+import com.TruckApi.TruckApi.entities.TruckData.TruckType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

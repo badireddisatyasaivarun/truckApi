@@ -120,7 +120,6 @@ public class TruckServiceImpl implements TruckService {
 				return truckCreateResponse;
 			}
 		}
-		else System.out.println("no: "  + truckRequest.getTyres());
 		
 		truckData.setTruckApproved(false);
 		
@@ -136,16 +135,16 @@ public class TruckServiceImpl implements TruckService {
 
 //		Sending success postResponse
 		truckCreateResponse.setStatus(truckConstants.ADD_SUCCESS);
-		truckCreateResponse.setTransporterId(truckRequest.getTransporterId());
+		truckCreateResponse.setTransporterId(truckData.getTransporterId());
 		truckCreateResponse.setTruckId(truckId_temp);
-		truckCreateResponse.setDriverId(truckRequest.getDriverId());
-		truckCreateResponse.setImei(truckRequest.getImei());
-		truckCreateResponse.setPassingWeight(truckRequest.getPassingWeight());
+		truckCreateResponse.setDriverId(truckData.getDriverId());
+		truckCreateResponse.setImei(truckData.getImei());
+		truckCreateResponse.setPassingWeight(truckData.getPassingWeight());
 		truckCreateResponse.setTruckApproved(false);
-		truckCreateResponse.setTruckLength(truckRequest.getTruckLength());
-		truckCreateResponse.setTruckNo(truckRequest.getTruckNo());
-		truckCreateResponse.setTruckType(truckRequest.getTruckType());
-		truckCreateResponse.setTyres(truckRequest.getTyres());
+		truckCreateResponse.setTruckLength(truckData.getTruckLength());
+		truckCreateResponse.setTruckNo(truckData.getTruckNo());
+		truckCreateResponse.setTruckType(truckData.getTruckType());
+		truckCreateResponse.setTyres(truckData.getTyres());
 		
 		
 		
@@ -228,7 +227,7 @@ public class TruckServiceImpl implements TruckService {
 		response.setDriverId(truckData.getDriverId());
 		response.setImei(truckData.getImei());
 		response.setPassingWeight(truckData.getPassingWeight());
-		response.setTruckApproved(false);
+		response.setTruckApproved(truckData.getTruckApproved());
 		response.setTruckLength(truckData.getTruckLength());
 		response.setTruckNo(truckData.getTruckNo());
 		response.setTruckType(truckData.getTruckType());
