@@ -16,11 +16,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TruckUpdateRequest {
 	
-	private String imei;
 	private Boolean truckApproved;
-	private  long passingWeight;
+	
+	private String imei;
+	private long passingWeight;
 	private String driverId;	
 	private Integer tyres;
+	private Long truckLength;
 
 	@Enumerated(EnumType.STRING)
 	private TruckType truckType;
