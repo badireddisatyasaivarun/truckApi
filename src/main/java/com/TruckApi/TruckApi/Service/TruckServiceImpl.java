@@ -86,7 +86,10 @@ public class TruckServiceImpl implements TruckService {
 		if (truckRequest.getDriverId() != null) {
 			truckData.setDriverId(truckRequest.getDriverId());
 		}
-
+		
+		if (truckRequest.getTruckLength() != null) {
+			truckData.setTruckLength(truckRequest.getTruckLength());
+		}
 		if (truckRequest.getTruckType() != null) {
 
 			if ("OPEN_HALF_BODY".equals(String.valueOf(truckRequest.getTruckType())))
@@ -113,11 +116,10 @@ public class TruckServiceImpl implements TruckService {
 			}
 			else
 			{
-				truckCreateResponse.setStatus(truckConstants.UNVALID_NUMBER_OF_TYRES_ERROR);
+				truckCreateResponse.setStatus(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
 				return truckCreateResponse;
 			}
 		}
-		else System.out.println("no: "  + truckRequest.getTyres());
 		
 		truckData.setTruckApproved(false);
 		
@@ -133,8 +135,19 @@ public class TruckServiceImpl implements TruckService {
 
 //		Sending success postResponse
 		truckCreateResponse.setStatus(truckConstants.ADD_SUCCESS);
-		truckCreateResponse.setTransporterId(truckRequest.getTransporterId());
+		truckCreateResponse.setTransporterId(truckData.getTransporterId());
 		truckCreateResponse.setTruckId(truckId_temp);
+		truckCreateResponse.setDriverId(truckData.getDriverId());
+		truckCreateResponse.setImei(truckData.getImei());
+		truckCreateResponse.setPassingWeight(truckData.getPassingWeight());
+		truckCreateResponse.setTruckApproved(false);
+		truckCreateResponse.setTruckLength(truckData.getTruckLength());
+		truckCreateResponse.setTruckNo(truckData.getTruckNo());
+		truckCreateResponse.setTruckType(truckData.getTruckType());
+		truckCreateResponse.setTyres(truckData.getTyres());
+		
+		
+		
 		return truckCreateResponse;
 		
 		
@@ -169,6 +182,10 @@ public class TruckServiceImpl implements TruckService {
 			truckData.setTruckApproved(truckUpdateRequest.getTruckApproved());
 
 		}
+		
+		if (truckUpdateRequest.getTruckLength() != null) {
+			truckData.setTruckLength(truckUpdateRequest.getTruckLength());
+		}
 
 		if (truckUpdateRequest.getTruckType() != null) {
 			 if ("OPEN_HALF_BODY".equals(String.valueOf(truckUpdateRequest.getTruckType())))
@@ -187,7 +204,7 @@ public class TruckServiceImpl implements TruckService {
 				truckData.setTruckType(TruckType.HIGH_CUBE_CONTAINER);
 			else
 			{
-				response.setStatus(truckConstants.UNVALID_TRUCK_TYPE_ERROR);
+				response.setStatus(truckConstants.INVALID_TRUCK_TYPE_ERROR);
 				return response;
 			}
 		}
@@ -198,7 +215,7 @@ public class TruckServiceImpl implements TruckService {
 			}
 			else 
 			{
-				response.setStatus(truckConstants.UNVALID_NUMBER_OF_TYRES_ERROR);
+				response.setStatus(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
 				return response;
 			}
 		}
@@ -207,6 +224,15 @@ public class TruckServiceImpl implements TruckService {
 		response.setStatus(truckConstants.UPDATE_SUCCESS);
 		response.setTransporterId(truckData.getTransporterId());
 		response.setTruckId(id);
+		response.setDriverId(truckData.getDriverId());
+		response.setImei(truckData.getImei());
+		response.setPassingWeight(truckData.getPassingWeight());
+		response.setTruckApproved(truckData.getTruckApproved());
+		response.setTruckLength(truckData.getTruckLength());
+		response.setTruckNo(truckData.getTruckNo());
+		response.setTruckType(truckData.getTruckType());
+		response.setTyres(truckData.getTyres());
+		
 		return response;
 	}
 

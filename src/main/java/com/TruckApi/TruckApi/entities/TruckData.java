@@ -29,6 +29,7 @@ public @Data class TruckData {
 	private long passingWeight;
 	private String driverId;
 	private Integer tyres;
+	private Long truckLength;
 	
 	@Enumerated(EnumType.STRING)
 	public TruckType truckType;

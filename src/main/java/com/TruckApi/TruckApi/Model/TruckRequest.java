@@ -21,10 +21,12 @@ public class TruckRequest {
 	private String truckNo;
 
 	private String imei;
-	private  long passingWeight;
+	private long passingWeight;
 	private String driverId;
 	private Integer tyres;
-
+	private Long truckLength;
+	
+	
 	@Enumerated(EnumType.STRING)
 	private TruckType truckType;
 	
