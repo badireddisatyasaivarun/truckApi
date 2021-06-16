@@ -11,9 +11,14 @@ import com.TruckApi.TruckApi.entities.TruckData;
 
 public interface TruckService {
 	public TruckCreateResponse addData(TruckRequest truckRequest);
-	public TruckUpdateResponse updateData(String id,TruckUpdateRequest truckUpdateRequest);
+
+	public TruckUpdateResponse updateData(String id, TruckUpdateRequest truckUpdateRequest);
+
 	public TruckDeleteResponse deleteData(String id);
+
 	public TruckData getDataById(String Id);
-	public List<TruckData> getTruckDataPagableService(Integer pageNo,String transporterId,Boolean truckApproved,String truckId);
-		
+
+	public List<TruckData> getTruckDataPagableService(Integer pageNo, String transporterId, Boolean truckApproved,
+			String truckId);
+
 }
