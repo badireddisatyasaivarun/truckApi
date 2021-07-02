@@ -20,7 +20,7 @@ public class TruckConstants {
 	public static final String TRUCK_ID = "truckId:62cc8557-52cd-4742-a11e-276cc7bec12e";
 	public static final String TRANSPORTER_ID = "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb67";
 	public static final String TRUCK_NO = "AP 32 AD 2220";
-	public static final String BASE_URI = "http://localhost:8080/truck";
+	public static final String BASE_URI = "http://3.7.133.111:9090/truck";
 
 	public static final String CHECK_TRUCK_NO = "^[A-Za-z]{2}[ -/]{0,1}[0-9]{1,2}[ -/]{0,1}(?:[A-Za-z]{0,1})[ -/]{0,1}[A-Za-z]{0,2}[ -/]{0,1}[0-9]{4}$";
 
