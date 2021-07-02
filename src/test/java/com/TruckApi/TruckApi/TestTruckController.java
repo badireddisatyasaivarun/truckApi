@@ -1,48 +1,14 @@
 package com.TruckApi.TruckApi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+//import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.*;
-
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -50,17 +16,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.assertj.core.api.Assertions.assertThat;
-//import static org.junit.Assert.assertEquals;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.TruckApi.TruckApi.Constants.TruckConstants;
 import com.TruckApi.TruckApi.Controller.TruckController;
@@ -73,10 +32,9 @@ import com.TruckApi.TruckApi.Model.TruckUpdateRequest;
 import com.TruckApi.TruckApi.Model.TruckUpdateResponse;
 import com.TruckApi.TruckApi.Service.TruckServiceImpl;
 import com.TruckApi.TruckApi.entities.TruckData;
-import com.TruckApi.TruckApi.entities.TruckTransporterData;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(value = TruckController.class)
 class TestTruckController {
 
@@ -105,14 +63,12 @@ class TestTruckController {
 	@Test
 	public void addData() throws Exception {
 
-		// I have a doubt in this test case also....it always gets pass i don't know why
-
 		TruckRequest truckRequest = new TruckRequest("transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
-				"AP 32 AD 2220", "alpha", (long) 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865", 16, (long) 60,
-				TruckRequest.TruckType.OPEN_HALF_BODY);
+				"ZZ 32 AD 2220", "alpha", (long) 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865", 16, (long) 60,
+				TruckData.TruckType.OPEN_HALF_BODY);
 
-		TruckCreateResponse truckCreateResponse = new TruckCreateResponse(TruckConstants.ADD_SUCCESS,
-				"transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69", null, "AP 32 AD 2220",false, "alpha", (long) 50,
+		TruckCreateResponse truckCreateResponse = new TruckCreateResponse(TruckConstants.DELETE_SUCCESS,
+				"transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69", null, "AP 32 AD 2220", false, "alpha", (long) 50,
 				"driver:0de885e0-5f43-4c68-8dde-b25464747865", 16, (long) 60, TruckData.TruckType.OPEN_HALF_BODY);
 
 		when(truckService.addData(Mockito.any(TruckRequest.class))).thenReturn(truckCreateResponse);
@@ -131,11 +87,6 @@ class TestTruckController {
 
 		String outputInJson = response.getContentAsString();
 
-		System.err.println("i" + inputJson);
-		// System.err.println(outputInJson);
-		System.err.println("e" + expectedJson);
-		System.err.println("o" + outputInJson);
-
 		assertThat(outputInJson).isEqualTo(expectedJson);
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
 
@@ -152,9 +103,12 @@ class TestTruckController {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.get(URI).accept(MediaType.APPLICATION_JSON);
 
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
 		String expectedJson = mapToJson(listTruckData.get(0));
 		String outputInJson = result.getResponse().getContentAsString();
 
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
 		assertEquals(expectedJson, outputInJson);
 
 	}
@@ -162,25 +116,25 @@ class TestTruckController {
 	@Test
 	public void getTruckDataWithParameters() throws Exception {
 
-		// This test case is not working. Not sure why...Nothing is coming as output....
-
 		List<TruckData> listTruckData = createTruckData();
 
 		when(truckService.getTruckDataPagableService(0, TruckConstants.TRANSPORTER_ID, null, null))
 				.thenReturn(listTruckData.subList(3, 5));
 
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.get(TruckConstants.URI)
-				.param("transporterId", TruckConstants.TRANSPORTER_ID).accept(MediaType.APPLICATION_JSON);
+				.queryParam("transporterId", TruckConstants.TRANSPORTER_ID).queryParam("pageNo", String.valueOf(0))
+				.accept(MediaType.APPLICATION_JSON);
 
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
+		String outputInJson = response.getContentAsString();
 		String expectedJson = mapToJson(listTruckData.subList(3, 5));
-		String outputInJson = result.getResponse().getContentAsString();
 
 		assertEquals(expectedJson, outputInJson);
 
 	}
 
-//	
 	@Test
 	public void updateData() throws Exception {
 
@@ -188,12 +142,12 @@ class TestTruckController {
 
 		when(truckService.getDataById(TruckConstants.TRUCK_ID)).thenReturn(listTruckData.get(0));
 
-		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest(false,"beta",(long) 1000, "driver:abccde",
+		TruckUpdateRequest truckUpdateRequest = new TruckUpdateRequest(false, "beta", (long) 1000, "driver:abccde",
 				null, null, null);
 
 		TruckUpdateResponse response = new TruckUpdateResponse(TruckConstants.UPDATE_SUCCESS,
-				listTruckData.get(0).getTransporterId(), TruckConstants.TRUCK_ID, "AP 32 AD 2220",false,"beta" , (long) 1000, "driver:abccde",
-				null, null, null);
+				listTruckData.get(0).getTransporterId(), TruckConstants.TRUCK_ID, "AP 32 AD 2220", false, "beta",
+				(long) 1000, "driver:abccde", null, null, null);
 
 		String inputJson = mapToJson(truckUpdateRequest);
 
@@ -207,7 +161,6 @@ class TestTruckController {
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 		MockHttpServletResponse response1 = result.getResponse();
 		String outputInJson = result.getResponse().getContentAsString();
-		// assertThat(outputInJson).isEqualTo(expectedJson);
 
 		assertEquals(expectedJson, outputInJson);
 		assertEquals(HttpStatus.OK.value(), response1.getStatus());
@@ -233,7 +186,6 @@ class TestTruckController {
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 		MockHttpServletResponse response1 = result.getResponse();
 		String outputInJson = result.getResponse().getContentAsString();
-		// assertThat(outputInJson).isEqualTo(expectedJson);
 
 		assertEquals(expectedJson, outputInJson);
 		assertEquals(HttpStatus.OK.value(), response1.getStatus());

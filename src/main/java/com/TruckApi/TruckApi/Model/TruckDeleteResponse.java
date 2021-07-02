@@ -1,6 +1,5 @@
 package com.TruckApi.TruckApi.Model;
 
-import com.TruckApi.TruckApi.Model.TruckRequest.TruckType;
 //import com.TruckApi.TruckApi.Model.TruckRequest.Tyres;
 
 import lombok.AllArgsConstructor;

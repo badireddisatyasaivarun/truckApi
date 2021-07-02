@@ -86,7 +86,7 @@ public class TruckServiceImpl implements TruckService {
 		if (truckRequest.getDriverId() != null) {
 			truckData.setDriverId(truckRequest.getDriverId());
 		}
-		
+
 		if (truckRequest.getTruckLength() != null) {
 			truckData.setTruckLength(truckRequest.getTruckLength());
 		}
@@ -109,20 +109,16 @@ public class TruckServiceImpl implements TruckService {
 
 		}
 
-		if (truckRequest.getTyres()!=null) {
-			if(truckRequest.getTyres()>=4 && truckRequest.getTyres()<=26 && truckRequest.getTyres()%2==0)
-			{
+		if (truckRequest.getTyres() != null) {
+			if (truckRequest.getTyres() >= 4 && truckRequest.getTyres() <= 26 && truckRequest.getTyres() % 2 == 0) {
 				truckData.setTyres(truckRequest.getTyres());
-			}
-			else
-			{
+			} else {
 				truckCreateResponse.setStatus(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
 				return truckCreateResponse;
 			}
 		}
-		
+
 		truckData.setTruckApproved(false);
-		
 
 		truckDao.save(truckData);
 
@@ -145,12 +141,9 @@ public class TruckServiceImpl implements TruckService {
 		truckCreateResponse.setTruckNo(truckData.getTruckNo());
 		truckCreateResponse.setTruckType(truckData.getTruckType());
 		truckCreateResponse.setTyres(truckData.getTyres());
-		
-		
-		
+
 		return truckCreateResponse;
-		
-		
+
 	}
 
 	public TruckUpdateResponse updateData(String id, TruckUpdateRequest truckUpdateRequest) {
@@ -182,13 +175,13 @@ public class TruckServiceImpl implements TruckService {
 			truckData.setTruckApproved(truckUpdateRequest.getTruckApproved());
 
 		}
-		
+
 		if (truckUpdateRequest.getTruckLength() != null) {
 			truckData.setTruckLength(truckUpdateRequest.getTruckLength());
 		}
 
 		if (truckUpdateRequest.getTruckType() != null) {
-			 if ("OPEN_HALF_BODY".equals(String.valueOf(truckUpdateRequest.getTruckType())))
+			if ("OPEN_HALF_BODY".equals(String.valueOf(truckUpdateRequest.getTruckType())))
 				truckData.setTruckType(TruckType.OPEN_HALF_BODY);
 			else if ("OPEN_FULL_BODY".equals(String.valueOf(truckUpdateRequest.getTruckType())))
 				truckData.setTruckType(TruckType.OPEN_FULL_BODY);
@@ -202,19 +195,16 @@ public class TruckServiceImpl implements TruckService {
 				truckData.setTruckType(TruckType.STANDARD_CONTAINER);
 			else if ("HIGH_CUBE_CONTAINER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
 				truckData.setTruckType(TruckType.HIGH_CUBE_CONTAINER);
-			else
-			{
+			else {
 				response.setStatus(truckConstants.INVALID_TRUCK_TYPE_ERROR);
 				return response;
 			}
 		}
-		if (truckUpdateRequest.getTyres()!=null ) {
-			if(truckUpdateRequest.getTyres()>=4 && truckUpdateRequest.getTyres()<=26 && truckUpdateRequest.getTyres()%2==0)
-			{
+		if (truckUpdateRequest.getTyres() != null) {
+			if (truckUpdateRequest.getTyres() >= 4 && truckUpdateRequest.getTyres() <= 26
+					&& truckUpdateRequest.getTyres() % 2 == 0) {
 				truckData.setTyres(truckUpdateRequest.getTyres());
-			}
-			else 
-			{
+			} else {
 				response.setStatus(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
 				return response;
 			}
@@ -232,7 +222,7 @@ public class TruckServiceImpl implements TruckService {
 		response.setTruckNo(truckData.getTruckNo());
 		response.setTruckType(truckData.getTruckType());
 		response.setTyres(truckData.getTyres());
-		
+
 		return response;
 	}
 
@@ -275,7 +265,7 @@ public class TruckServiceImpl implements TruckService {
 		if (pageNo == null)
 			pageNo = 0;
 
-		Pageable currentPage = PageRequest.of(pageNo, 15);
+		Pageable currentPage = PageRequest.of(pageNo, (int) TruckConstants.pageSize);
 
 		if (truckId != null) {
 			return truckDao.findByTruckId(truckId, currentPage);

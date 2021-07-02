@@ -25,13 +25,7 @@ public class TruckRequest {
 	private String driverId;
 	private Integer tyres;
 	private Long truckLength;
-	
-	
-	@Enumerated(EnumType.STRING)
+
 	private TruckType truckType;
-	
-	public enum TruckType {
-		OPEN_HALF_BODY, OPEN_FULL_BODY, FLATBED, HALF_BODY_TRAILER, FULL_BODY_TRAILER, STANDARD_CONTAINER, HIGH_CUBE_CONTAINER;
-	}
 
 }

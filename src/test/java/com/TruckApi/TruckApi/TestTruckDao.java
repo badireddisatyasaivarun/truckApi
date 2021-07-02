@@ -7,20 +7,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.TruckApi.TruckApi.Constants.TruckConstants;
 import com.TruckApi.TruckApi.Dao.TruckDao;
-
 import com.TruckApi.TruckApi.entities.TruckData;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest
 public class TestTruckDao {
 
@@ -104,7 +100,7 @@ public class TestTruckDao {
 		for (TruckData t : allTrucks) {
 			list.add(t);
 		}
-		assertThat(list.size()).isEqualTo(1);
+		assertThat(list.size()).isEqualTo(2);
 
 	}
 
@@ -138,14 +134,12 @@ public class TestTruckDao {
 		// entityManager.persist(truckData);
 		TruckData getFromDb = truckDao.findByTruckId(TruckConstants.TRUCK_ID);
 
-		listTruckData.get(0).setPassingWeight((long)100);
+		listTruckData.get(0).setPassingWeight((long) 100);
 
 		entityManager.persist(listTruckData.get(0));
 
-		
 		Iterable<TruckData> allTrucks = truckDao.findAll();
-				
-		
+
 		List<TruckData> list = new ArrayList<>();
 
 		for (TruckData t : allTrucks) {
@@ -177,18 +171,20 @@ public class TestTruckDao {
 
 	public List<TruckData> createTruckData() {
 		List<TruckData> truckList = Arrays.asList(
-						new TruckData(TruckConstants.TRUCK_ID, "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
-								"AP 32 AD 2220", true, "alpha", (long) 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865",
-								16,(long) 40, TruckData.TruckType.OPEN_HALF_BODY),
-						new TruckData("id1", null, "AP 32 AD 2226", true, null, (long) 0, null, null, null, null),
-						new TruckData("id2", "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69", null, true, null, (long) 0, null,
-								null, null, null),
-						new TruckData("id3", TruckConstants.TRANSPORTER_ID, "AP 32 AD 2220", true, null, (long) 0, null, null, null, null),
-						new TruckData("id4", TruckConstants.TRANSPORTER_ID, "Ap32ad2219", true, null, (long) 0, null, null, null, null),
-						new TruckData("id5", "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb68", "A32ad2219", false, null, (long) 0,
-								null, null, (long) 30, null),
-						new TruckData("id6", "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb68", "Ap32ad221", false, null, (long) 0,
-								null, null, (long) 40, null));
+				new TruckData(TruckConstants.TRUCK_ID, "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69",
+						"AP 32 AD 2220", true, "alpha", (long) 50, "driver:0de885e0-5f43-4c68-8dde-b25464747865", 16,
+						(long) 40, TruckData.TruckType.OPEN_HALF_BODY),
+				new TruckData("id1", null, "AP 32 AD 2226", true, null, (long) 0, null, null, null, null),
+				new TruckData("id2", "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb69", null, true, null, (long) 0,
+						null, null, null, null),
+				new TruckData("id3", TruckConstants.TRANSPORTER_ID, "AP 32 AD 2220", true, null, (long) 0, null, null,
+						null, null),
+				new TruckData("id4", TruckConstants.TRANSPORTER_ID, "Ap32ad2219", true, null, (long) 0, null, null,
+						null, null),
+				new TruckData("id5", "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb68", "A32ad2219", false, null,
+						(long) 0, null, null, (long) 30, null),
+				new TruckData("id6", "transporterId:0de885e0-5f43-4c68-8dde-b0f9ff81cb68", "Ap32ad221", false, null,
+						(long) 0, null, null, (long) 40, null));
 
 		return truckList;
 	}
