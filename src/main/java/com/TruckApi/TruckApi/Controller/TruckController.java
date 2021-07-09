@@ -2,6 +2,8 @@ package com.TruckApi.TruckApi.Controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,14 +57,14 @@ public class TruckController {
 
 	@PostMapping("/truck")
 	@ApiOperation(value = "Add a new Truck", notes = "We add the truck to the database by providing its transporterId and TruckNo")
-	public ResponseEntity<TruckCreateResponse> addTruck(@RequestBody TruckRequest truckRequest) {
+	public ResponseEntity<TruckCreateResponse> addTruck(@Valid @RequestBody TruckRequest truckRequest) {
 		log.info("Post Controller Started");
 		return new ResponseEntity<>(truckService.addData(truckRequest), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/truck/{truckId}")
 	@ApiOperation(value = "Update details of a particular Truck", notes = "We Update the truck Details like IMEI, Approved Status and TruckNo by providing TruckId as a path variable")
-	public ResponseEntity<TruckUpdateResponse> updateTruck(@PathVariable String truckId,
+	public ResponseEntity<TruckUpdateResponse> updateTruck(@Valid @PathVariable String truckId,
 			@RequestBody TruckUpdateRequest truckUpdateRequest) throws EntityNotFoundException {
 		log.info("Put Controller Started");
 		return new ResponseEntity<>(truckService.updateData(truckId, truckUpdateRequest), HttpStatus.OK);

@@ -1,4 +1,4 @@
-package biddingApi.biddingApi.Exception;
+package com.TruckApi.TruckApi.Exception;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;

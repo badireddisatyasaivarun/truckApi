@@ -1,4 +1,4 @@
-package biddingApi.biddingApi.Exception;
+package com.TruckApi.TruckApi.Exception;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

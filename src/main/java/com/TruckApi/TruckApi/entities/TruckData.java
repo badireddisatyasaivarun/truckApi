@@ -1,14 +1,13 @@
 package com.TruckApi.TruckApi.entities;
 
-import java.util.UUID;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.validator.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,13 +16,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "transporterId", "truckNo" }) })
 public @Data class TruckData {
 
 	@Id
 	private String truckId;
-
+	
+	@NotBlank(message = "Transporter Id can not be null")
 	private String transporterId;
+	@NotBlank(message = "Truck Number can not be null")
 	private String truckNo;
+	
 	private Boolean truckApproved;
 	private String imei;
 	private long passingWeight;

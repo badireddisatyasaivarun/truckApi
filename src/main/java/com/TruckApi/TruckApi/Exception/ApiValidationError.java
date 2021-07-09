@@ -1,4 +1,4 @@
-package biddingApi.biddingApi.Exception;
+package com.TruckApi.TruckApi.Exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

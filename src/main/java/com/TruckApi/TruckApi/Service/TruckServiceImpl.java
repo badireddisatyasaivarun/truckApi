@@ -1,32 +1,32 @@
 package com.TruckApi.TruckApi.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.TruckApi.TruckApi.Constants.TruckConstants;
 import com.TruckApi.TruckApi.Dao.SecondTruckDao;
 import com.TruckApi.TruckApi.Dao.TruckDao;
+import com.TruckApi.TruckApi.Exception.BusinessException;
+import com.TruckApi.TruckApi.Exception.EntityNotFoundException;
 import com.TruckApi.TruckApi.Model.TruckCreateResponse;
 import com.TruckApi.TruckApi.Model.TruckDeleteResponse;
 import com.TruckApi.TruckApi.Model.TruckRequest;
-
 import com.TruckApi.TruckApi.Model.TruckUpdateRequest;
 import com.TruckApi.TruckApi.Model.TruckUpdateResponse;
 import com.TruckApi.TruckApi.entities.TruckData;
 import com.TruckApi.TruckApi.entities.TruckData.TruckType;
-
 import com.TruckApi.TruckApi.entities.TruckTransporterData;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TruckServiceImpl implements TruckService {
 
 	@Autowired
@@ -36,39 +36,24 @@ public class TruckServiceImpl implements TruckService {
 
 	private TruckConstants truckConstants;
 
+
+	@Transactional( rollbackFor = Exception.class)
 	@Override
 	public TruckCreateResponse addData(TruckRequest truckRequest) {
 
 		TruckCreateResponse truckCreateResponse = new TruckCreateResponse();
-
-		if (truckRequest.getTransporterId() == null) {
-			truckCreateResponse.setStatus(truckConstants.IN_CORRECT_TRANSPORTER_ID);
-			return truckCreateResponse;
-		}
-
-		if (truckRequest.getTruckNo() == null) {
-			truckCreateResponse.setStatus(truckConstants.TRUCK_NO_IS_INVALID);
-			return truckCreateResponse;
-		}
 
 		String truckNo = truckRequest.getTruckNo();
 
 		String checkTruckNo = TruckConstants.CHECK_TRUCK_NO;
 
 		if (!truckNo.matches(checkTruckNo)) {
-			truckCreateResponse.setStatus(truckConstants.TRUCK_NO_IS_INVALID);
-			return truckCreateResponse;
+			log.error(truckConstants.TRUCK_NO_IS_INVALID);
+			throw new BusinessException(truckConstants.TRUCK_NO_IS_INVALID);
+
 		}
 
 		String truckNoUpdated = generateTruckNumber(truckNo);
-
-		// handling already existed same TruckNo and TransporterId case
-		List<TruckData> check = truckDao.findByTransporterIdAndTruckNo(truckRequest.getTransporterId(), truckNoUpdated);
-
-		if (check.size() != 0) {
-			truckCreateResponse.setStatus(truckConstants.EXISTING_TRUCK_AND_TRANSPORTER);
-			return truckCreateResponse;
-		}
 
 //		sending truckData to TruckData Table.
 		TruckData truckData = new TruckData();
@@ -104,17 +89,20 @@ public class TruckServiceImpl implements TruckService {
 				truckData.setTruckType(TruckType.FULL_BODY_TRAILER);
 			else if ("STANDARD_CONTAINER".equals(String.valueOf(truckRequest.getTruckType())))
 				truckData.setTruckType(TruckType.STANDARD_CONTAINER);
-			else
+			else if ("HIGH_CUBE_CONTAINER".equals(String.valueOf(truckRequest.getTruckType())))
 				truckData.setTruckType(TruckType.HIGH_CUBE_CONTAINER);
-
+			else {
+				log.error(truckConstants.INVALID_TRUCK_TYPE_ERROR);
+				throw new BusinessException(truckConstants.INVALID_TRUCK_TYPE_ERROR);
+			}
 		}
 
 		if (truckRequest.getTyres() != null) {
 			if (truckRequest.getTyres() >= 4 && truckRequest.getTyres() <= 26 && truckRequest.getTyres() % 2 == 0) {
 				truckData.setTyres(truckRequest.getTyres());
 			} else {
-				truckCreateResponse.setStatus(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
-				return truckCreateResponse;
+				log.error(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
+				throw new BusinessException(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
 			}
 		}
 
@@ -126,9 +114,10 @@ public class TruckServiceImpl implements TruckService {
 		TruckTransporterData sData = new TruckTransporterData();
 		sData.setTransporterId(truckRequest.getTransporterId());
 		sData.setTruckId(truckId_temp);
-
+		
+		
 		sTruckDao.save(sData);
-
+		log.info("Truck Data is saved");
 //		Sending success postResponse
 		truckCreateResponse.setStatus(truckConstants.ADD_SUCCESS);
 		truckCreateResponse.setTransporterId(truckData.getTransporterId());
@@ -141,22 +130,33 @@ public class TruckServiceImpl implements TruckService {
 		truckCreateResponse.setTruckNo(truckData.getTruckNo());
 		truckCreateResponse.setTruckType(truckData.getTruckType());
 		truckCreateResponse.setTyres(truckData.getTyres());
+		log.info("Post Service Response returned");
 
 		return truckCreateResponse;
 
 	}
-
+	@Transactional( rollbackFor = Exception.class)
 	public TruckUpdateResponse updateData(String id, TruckUpdateRequest truckUpdateRequest) {
 
 		TruckUpdateResponse response = new TruckUpdateResponse();
-		TruckData truckData = new TruckData();
+		TruckData truckData = truckDao.findByTruckId(id);
+//
+//		Optional<TruckData> findTruck = Optional.ofNullable(truckDao.findByTruckId(id));
+//		if (findTruck.isPresent()) {
+//			truckData = findTruck.get();
+//		} else {
+//			response.setStatus(truckConstants.ACCOUNT_NOT_FOUND_ERROR);
+//			return response;
+//		}
+//		
+//		
+//		BookingData data = bookingDao.findByBookingId(bookingId);
 
-		Optional<TruckData> findTruck = Optional.ofNullable(truckDao.findByTruckId(id));
-		if (findTruck.isPresent()) {
-			truckData = findTruck.get();
-		} else {
-			response.setStatus(truckConstants.ACCOUNT_NOT_FOUND_ERROR);
-			return response;
+		if (truckData == null) {
+			EntityNotFoundException ex = new EntityNotFoundException(TruckData.class, "truckId", id.toString());
+
+			log.error(String.valueOf(ex));
+			throw ex;
 		}
 
 		if (truckUpdateRequest.getImei() != null) {
@@ -196,8 +196,8 @@ public class TruckServiceImpl implements TruckService {
 			else if ("HIGH_CUBE_CONTAINER".equals(String.valueOf(truckUpdateRequest.getTruckType())))
 				truckData.setTruckType(TruckType.HIGH_CUBE_CONTAINER);
 			else {
-				response.setStatus(truckConstants.INVALID_TRUCK_TYPE_ERROR);
-				return response;
+				log.error(truckConstants.INVALID_TRUCK_TYPE_ERROR);
+				throw new BusinessException(truckConstants.INVALID_TRUCK_TYPE_ERROR);
 			}
 		}
 		if (truckUpdateRequest.getTyres() != null) {
@@ -205,12 +205,14 @@ public class TruckServiceImpl implements TruckService {
 					&& truckUpdateRequest.getTyres() % 2 == 0) {
 				truckData.setTyres(truckUpdateRequest.getTyres());
 			} else {
-				response.setStatus(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
-				return response;
+				log.error(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
+				throw new BusinessException(truckConstants.INVALID_NUMBER_OF_TYRES_ERROR);
+
 			}
 		}
 
 		truckDao.save(truckData);
+		log.info("Truck Data is updated");
 		response.setStatus(truckConstants.UPDATE_SUCCESS);
 		response.setTransporterId(truckData.getTransporterId());
 		response.setTruckId(id);
@@ -222,43 +224,55 @@ public class TruckServiceImpl implements TruckService {
 		response.setTruckNo(truckData.getTruckNo());
 		response.setTruckType(truckData.getTruckType());
 		response.setTyres(truckData.getTyres());
-
+		log.info("Put Service Response returned");
 		return response;
 	}
 
-//	delete a truckData
+	@Transactional( rollbackFor = Exception.class)
 	public TruckDeleteResponse deleteData(String id) {
 
 		TruckDeleteResponse truckDeleteResponse = new TruckDeleteResponse();
 
-		TruckData findTruckData = truckDao.findByTruckId(id);
+//		TruckData findTruckData = truckDao.findByTruckId(id);
+//		TruckTransporterData findTruckTransporterData = sTruckDao.findByTruckId(id);
+
+		TruckData truckData = truckDao.findByTruckId(id);
 		TruckTransporterData findTruckTransporterData = sTruckDao.findByTruckId(id);
 
-		if (Objects.isNull(findTruckData) || Objects.isNull(findTruckTransporterData)) {
-			truckDeleteResponse.setStatus(truckConstants.ACCOUNT_NOT_FOUND_ERROR);
-			return truckDeleteResponse;
-		} else {
-			truckDao.delete(findTruckData);
-			sTruckDao.delete(findTruckTransporterData);
-
-			truckDeleteResponse.setStatus(truckConstants.DELETE_SUCCESS);
-			return truckDeleteResponse;
+		if (truckData == null || findTruckTransporterData == null) {
+			EntityNotFoundException ex = new EntityNotFoundException(TruckData.class, "truckId", id.toString());
+			log.error(String.valueOf(ex));
+			throw ex;
 		}
 
+		truckDao.delete(truckData);
+		sTruckDao.delete(findTruckTransporterData);
+		log.info("Deleted");
+
+		truckDeleteResponse.setStatus(truckConstants.DELETE_SUCCESS);
+		log.info("Deleted Service Response returned");
+		return truckDeleteResponse;
 	}
 
-	// get truck truckData by the truck id
+	@Transactional(readOnly = true, rollbackFor = Exception.class)
 	@Override
 	public TruckData getDataById(String Id) {
-		Optional<TruckData> findTruck = Optional.ofNullable(truckDao.findByTruckId(Id));
-		if (findTruck.isEmpty()) {
-			return null;
+
+		TruckData truckData = truckDao.findByTruckId(Id);
+
+		if (truckData == null) {
+			EntityNotFoundException ex = new EntityNotFoundException(TruckData.class, "truckId", Id.toString());
+
+			log.error(String.valueOf(ex));
+			throw ex;
 		}
-		return findTruck.get();
+
+		log.info("Truck Data returned");
+		return truckData;
 
 	}
 
-//	get pageable
+	@Transactional(readOnly = true, rollbackFor = Exception.class)
 	public List<TruckData> getTruckDataPagableService(Integer pageNo, String transporterId, Boolean truckApproved,
 			String truckId) {
 
@@ -273,18 +287,22 @@ public class TruckServiceImpl implements TruckService {
 
 		else {
 			if (transporterId != null && truckApproved == null) {
+				log.info("Truck Data with params returned");
 				return truckDao.findByTransporterId(transporterId, currentPage);
 			}
 
 			else if (transporterId == null && truckApproved != null) {
+				log.info("Truck Data with params returned");
 				return truckDao.findByTruckApproved(truckApproved, currentPage);
 			}
 
 			else if (transporterId != null && truckApproved != null) {
+				log.info("Truck Data with params returned");
 				return truckDao.findByTransporterIdAndTruckApproved(transporterId, truckApproved, currentPage);
 			}
 
 		}
+		log.info("Truck Data with params returned");
 		return truckDao.findAll();
 	}
 

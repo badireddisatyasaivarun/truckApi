@@ -1,4 +1,4 @@
-package biddingApi.biddingApi.Exception;
+package com.TruckApi.TruckApi.Exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -125,6 +125,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildResponseEntity(apiError);
 	}
 
+
+//	@ExceptionHandler(Exception.class)  
+//	@Order(Ordered.LOWEST_PRECEDENCE)
+//	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request)  
+//	{  
+//		log.info("handleAllExceptions is started");
+//		return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR , ex));
+//	}  
+	
 	/**
 	 * Handle HttpMessageNotReadableException. Happens when request JSON is
 	 * malformed.
@@ -219,6 +228,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildResponseEntity(apiError);
 	}
 
+	
+//	@ExceptionHandler(Exception.class)
+//	@Order(Ordered.LOWEST_PRECEDENCE)
+//	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request)  
+//	{  
+//		log.info("handleAllExceptions is started");
+//		return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR , ex));
+//	}  
+	
 	private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
 		return new ResponseEntity<>(apiError, apiError.getStatus());
 	}
