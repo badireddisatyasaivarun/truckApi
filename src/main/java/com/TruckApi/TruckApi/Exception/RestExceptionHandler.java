@@ -229,13 +229,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	
-//	@ExceptionHandler(Exception.class)
-//	@Order(Ordered.LOWEST_PRECEDENCE)
-//	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request)  
-//	{  
-//		log.info("handleAllExceptions is started");
-//		return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR , ex));
-//	}  
+	@ExceptionHandler(Exception.class)
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request)  
+	{  
+		log.info("handleAllExceptions is started");
+		return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR , ex));
+	}  
 	
 	private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
 		return new ResponseEntity<>(apiError, apiError.getStatus());

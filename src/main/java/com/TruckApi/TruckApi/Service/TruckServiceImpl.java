@@ -36,8 +36,7 @@ public class TruckServiceImpl implements TruckService {
 
 	private TruckConstants truckConstants;
 
-
-	@Transactional( rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public TruckCreateResponse addData(TruckRequest truckRequest) {
 
@@ -114,8 +113,7 @@ public class TruckServiceImpl implements TruckService {
 		TruckTransporterData sData = new TruckTransporterData();
 		sData.setTransporterId(truckRequest.getTransporterId());
 		sData.setTruckId(truckId_temp);
-		
-		
+
 		sTruckDao.save(sData);
 		log.info("Truck Data is saved");
 //		Sending success postResponse
@@ -135,7 +133,8 @@ public class TruckServiceImpl implements TruckService {
 		return truckCreateResponse;
 
 	}
-	@Transactional( rollbackFor = Exception.class)
+
+	@Transactional(rollbackFor = Exception.class)
 	public TruckUpdateResponse updateData(String id, TruckUpdateRequest truckUpdateRequest) {
 
 		TruckUpdateResponse response = new TruckUpdateResponse();
@@ -228,7 +227,7 @@ public class TruckServiceImpl implements TruckService {
 		return response;
 	}
 
-	@Transactional( rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class)
 	public TruckDeleteResponse deleteData(String id) {
 
 		TruckDeleteResponse truckDeleteResponse = new TruckDeleteResponse();
