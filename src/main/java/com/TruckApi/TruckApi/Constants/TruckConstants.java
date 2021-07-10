@@ -5,7 +5,7 @@ public class TruckConstants {
 	// error and success messages
 	public static final String IN_CORRECT_TRANSPORTER_ID = "Failed: Enter Correct Transporter Id";
 	public static final String TRUCK_NO_IS_INVALID = "Failed: Enter Correct Truck Number";
-	public static final String EXISTING_TRUCK_AND_TRANSPORTER = "Failed: TruckNo is already Associated with TransporterId";
+	public static final String EXISTING_TRUCK_AND_TRANSPORTER = "Failed: TruckNo is already registered";
 	public static final String ADD_SUCCESS = "Truck details Added Succcessfully";
 	public static final String UPDATE_SUCCESS = "Truck details Updated Succcessfully";
 	public static final String ACCOUNT_NOT_FOUND_ERROR = "Failed: Account not found";

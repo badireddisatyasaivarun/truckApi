@@ -45,14 +45,14 @@ public class TruckController {
 		log.info("Get with Params Controller Started");
 		return new ResponseEntity<>(
 				truckService.getTruckDataPagableService(pageNo, transporterId, truckApproved, truckId),
-				HttpStatus.FOUND);
+				HttpStatus.OK);
 	}
 
 	@GetMapping("/truck/{truckId}")
 	@ApiOperation(value = "Find Truck Data by using truckId", notes = "we provide the Truck Id as path variable and get the information of that truck")
 	public ResponseEntity<TruckData> getTruckWithId(@PathVariable String truckId) throws EntityNotFoundException {
 		log.info("Get Controller Started");
-		return new ResponseEntity<>(truckService.getDataById(truckId), HttpStatus.FOUND);
+		return new ResponseEntity<>(truckService.getDataById(truckId), HttpStatus.OK);
 	}
 
 	@PostMapping("/truck")
