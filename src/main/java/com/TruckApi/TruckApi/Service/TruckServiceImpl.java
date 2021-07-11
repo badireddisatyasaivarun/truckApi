@@ -139,17 +139,6 @@ public class TruckServiceImpl implements TruckService {
 
 		TruckUpdateResponse response = new TruckUpdateResponse();
 		TruckData truckData = truckDao.findByTruckId(id);
-//
-//		Optional<TruckData> findTruck = Optional.ofNullable(truckDao.findByTruckId(id));
-//		if (findTruck.isPresent()) {
-//			truckData = findTruck.get();
-//		} else {
-//			response.setStatus(truckConstants.ACCOUNT_NOT_FOUND_ERROR);
-//			return response;
-//		}
-//		
-//		
-//		BookingData data = bookingDao.findByBookingId(bookingId);
 
 		if (truckData == null) {
 			EntityNotFoundException ex = new EntityNotFoundException(TruckData.class, "truckId", id.toString());
@@ -239,9 +228,17 @@ public class TruckServiceImpl implements TruckService {
 		TruckTransporterData findTruckTransporterData = sTruckDao.findByTruckId(id);
 
 		if (truckData == null || findTruckTransporterData == null) {
-			EntityNotFoundException ex = new EntityNotFoundException(TruckData.class, "truckId", id.toString());
-			log.error(String.valueOf(ex));
-			throw ex;
+			if (truckData == null) {
+				EntityNotFoundException ex = new EntityNotFoundException(TruckData.class, "truckId", id.toString());
+				log.error(String.valueOf(ex));
+				throw ex;
+			} else {
+				EntityNotFoundException ex = new EntityNotFoundException(TruckTransporterData.class, "truckId",
+						id.toString());
+				log.error(String.valueOf(ex));
+				throw ex;
+
+			}
 		}
 
 		truckDao.delete(truckData);
@@ -301,7 +298,7 @@ public class TruckServiceImpl implements TruckService {
 			}
 
 		}
-		log.info("Truck Data with params returned");
+		log.info("Truck Data get all method called");
 		return truckDao.findAll();
 	}
 
