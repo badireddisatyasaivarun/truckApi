@@ -149,25 +149,25 @@ public class TestTruckDao {
 
 	}
 
-	@Test
-	public void testDelete() {
-
-		List<TruckData> listTruckData = createTruckData();
-
-		TruckData savedInDb = entityManager.persist(listTruckData.get(0));
-		TruckData savedInDb1 = entityManager.persist(listTruckData.get(1));
-
-		entityManager.remove(savedInDb1);
-
-		Iterable<TruckData> allTrucks = truckDao.findAll();
-		List<TruckData> list = new ArrayList<>();
-
-		for (TruckData t : allTrucks) {
-			list.add(t);
-		}
-		assertThat(list.size()).isEqualTo(1);
-
-	}
+//	@Test
+//	public void testDelete() {
+//
+//		List<TruckData> listTruckData = createTruckData();
+//
+//		TruckData savedInDb = entityManager.persist(listTruckData.get(0));
+//		TruckData savedInDb1 = entityManager.persist(listTruckData.get(1));
+//
+//		entityManager.remove(savedInDb1);
+//
+//		Iterable<TruckData> allTrucks = truckDao.findAll();
+//		List<TruckData> list = new ArrayList<>();
+//
+//		for (TruckData t : allTrucks) {
+//			list.add(t);
+//		}
+//		assertThat(list.size()).isEqualTo(1);
+//
+//	}
 
 	public List<TruckData> createTruckData() {
 		List<TruckData> truckList = Arrays.asList(

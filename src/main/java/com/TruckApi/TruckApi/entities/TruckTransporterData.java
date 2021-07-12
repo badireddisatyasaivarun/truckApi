@@ -1,11 +1,9 @@
 package com.TruckApi.TruckApi.entities;
 
-import java.util.UUID;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import com.TruckApi.TruckApi.entities.TruckData.TruckType;
+import org.hibernate.validator.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +16,8 @@ public @Data class TruckTransporterData {
 
 	@Id
 	private String truckId;
+	@NotBlank(message = "Transporter Id can not be null")
 	private String transporterId;
+
 
 }

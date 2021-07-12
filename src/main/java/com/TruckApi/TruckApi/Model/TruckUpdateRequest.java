@@ -1,10 +1,5 @@
 package com.TruckApi.TruckApi.Model;
 
-import java.util.UUID;
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
 import com.TruckApi.TruckApi.entities.TruckData.TruckType;
 
 import lombok.AllArgsConstructor;
