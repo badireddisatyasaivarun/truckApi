@@ -16,7 +16,7 @@ defaults:
 jobs:
   build:
 
-    runs-on: [self-hosted, linux, x64,label-2]
+    runs-on: [self-hosted, linux, x64, main]
 
     steps:
     - uses: actions/checkout@v2
